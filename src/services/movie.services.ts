@@ -2,15 +2,16 @@ import {IMovie} from "../models/IMovie";
 import {baseUrl, urls} from "../constants/urls";
 import {IGenre} from "../models/IGenre";
 import axios from "axios";
+import {PaginatedModel} from "../models/PaginatedModel";
 
 let axiosInstance = axios.create({
     baseURL:baseUrl
 })
 export const movieServices = {
 
-    getAll: async (): Promise<IMovie[]> => {
-        let response = await axiosInstance.get<{data: IMovie[]}>(urls.movies.base);
-        return response.data.data;
+    getAll: async (params:any): Promise<PaginatedModel<IMovie>> => {
+        let response = await axiosInstance.get<PaginatedModel<IMovie>>(urls.movies.base,{params});
+        return response.data;
     },
     getById: async (id: number): Promise<IMovie> => {
         let response = await axiosInstance.get<IMovie>(urls.movies.byId(id));
@@ -42,8 +43,8 @@ export const movieServices = {
         return data
     },
     getAllGenres: async (): Promise<IGenre[]> => {
-        let response = await axiosInstance.get<IGenre[]>(urls.movies.genres());
-        return response.data;
+        let response = await axiosInstance.get<{data:IGenre[]}>(urls.movies.genres());
+        return response.data.data;
     },
     getGenreById: async (id: number): Promise<IGenre> => {
         let response = await axiosInstance.get<IGenre>(urls.movies.genresById(id));

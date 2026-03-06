@@ -13,7 +13,7 @@ const Movies: FC<IProps> = ({movies}) =>{
         <ul>
             {
                 movies.map(movie => (<li key={movie.name}>
-                    <Link to={'/movies/'}>{movie.name}</Link>
+                    <Link to={'/movies/'+ movie.id}>{movie.name}</Link>
                 </li>))
             }
         </ul>

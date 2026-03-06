@@ -10,8 +10,8 @@ let axiosInstance = axios.create({
 
 export const sessionServices = {
     getAll: async (): Promise<ISession[]> => {
-        let response = await axiosInstance.get<ISession[]>(urls.sessions.base);
-        return response.data;
+        let response = await axiosInstance.get<{data:ISession[]}>(urls.sessions.base);
+        return response.data.data;
     },
     getById: async (id: number): Promise<ISession> => {
         let response = await axiosInstance.get<ISession>(urls.sessions.byId(id));
