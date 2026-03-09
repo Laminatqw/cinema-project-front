@@ -9,10 +9,12 @@ interface IProps{
 
 const Movies: FC<IProps> = ({movies}) =>{
 
+
+
     return (
         <ul>
             {
-                movies.map(movie => (<li key={movie.name}>
+                movies.map(movie => (<li key={movie.id}>
                     <Link to={'/movies/'+ movie.id}>{movie.name}</Link>
                 </li>))
             }

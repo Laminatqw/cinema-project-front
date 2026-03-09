@@ -1,8 +1,11 @@
 import {IMovie} from "../../models/IMovie";
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {IGenre} from "../../models/IGenre";
 import {movieServices} from "../../services/movie.services";
 import {AxiosError} from "axios";
+import {PaginatedModel} from "../../models/PaginatedModel";
+import {PaginatedPageModel} from "../../models/PaginatedPageModel";
+import {IMovieFilter} from "../../models/IMovieFilter";
 
 
 type MovieSliceType = {
@@ -11,7 +14,13 @@ type MovieSliceType = {
     genres:IGenre[],
     error:string,
     movie: IMovie|null;
-    genre:IGenre|null
+    genre:IGenre|null,
+    total_pages:number|null,
+    total_items:number|null,
+    prev:PaginatedPageModel |null,
+    next:PaginatedPageModel |null,
+    filters:IMovieFilter,
+
 }
 const initialState: MovieSliceType = {
     movies: [],
@@ -19,14 +28,22 @@ const initialState: MovieSliceType = {
     genres: [],
     error:'',
     movie: null,
-    genre: null
+    genre: null,
+    total_pages:null,
+    total_items:null,
+    prev:null,
+    next:null,
+    filters:{
+        page:1,
+    }
+
 }
 
 
-let getAllMovies = createAsyncThunk<IMovie[]>(
-    'movieSlice/getAllMovies', async (_, thunkAPI)=>{
+let getAllMovies = createAsyncThunk<PaginatedModel<IMovie>, IMovieFilter|undefined>(
+    'movieSlice/getAllMovies', async (filters , thunkAPI)=>{
         try {
-            let movies = await movieServices.getAll();
+            let movies = await movieServices.getAll(filters);
             return thunkAPI.fulfillWithValue(movies)
         } catch (e) {
             let error = e as AxiosError<{detail:string}>;
@@ -161,14 +178,41 @@ export const movieSlice = createSlice({
     reducers:{
         clearError: (state) => {
             state.error = ''
+        },
+        setPage(state, action){
+            state.filters.page = action.payload
+        },
+
+        setNameFilter(state, action){
+            state.filters.name = action.payload
+            state.filters.page = 1
+        },
+
+        setGenreFilter(state, action){
+            state.filters.genre = action.payload
+            state.filters.page = 1
+        },
+
+        setRatingGte(state, action){
+            state.filters.rating__gte = action.payload
+        },
+
+        setRatingLte(state, action){
+            state.filters.rating__lte = action.payload
+        },
+
+        setNowShowing(state, action){
+            state.filters.is_now_showing = action.payload
         }
     },
     extraReducers:builder => {
         builder
             .addCase(
                 getAllMovies.fulfilled,(state, action)=>{
-                    state.movies = action.payload
-                    state.isLoaded = true;
+                    state.movies = action.payload?.data || []
+                    state.total_pages = action.payload.total_pages
+                    state.total_items = action.payload.total_items
+                    state.isLoaded = true
                 }
             )
             .addCase(

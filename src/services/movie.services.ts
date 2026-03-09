@@ -3,15 +3,17 @@ import {baseUrl, urls} from "../constants/urls";
 import {IGenre} from "../models/IGenre";
 import axios from "axios";
 import {PaginatedModel} from "../models/PaginatedModel";
+import {IMovieFilter} from "../models/IMovieFilter";
+import {data} from "react-router-dom";
 
 let axiosInstance = axios.create({
     baseURL:baseUrl
 })
 export const movieServices = {
 
-    getAll: async (params:any): Promise<PaginatedModel<IMovie>> => {
-        let response = await axiosInstance.get<PaginatedModel<IMovie>>(urls.movies.base,{params});
-        return response.data;
+    getAll: async (filters?:IMovieFilter):Promise<PaginatedModel<IMovie>> =>{
+      const response = await axiosInstance.get(urls.movies.base,{params:filters})
+      return response.data
     },
     getById: async (id: number): Promise<IMovie> => {
         let response = await axiosInstance.get<IMovie>(urls.movies.byId(id));

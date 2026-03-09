@@ -5,5 +5,5 @@ export interface  PaginatedModel<T> {
     total_pages: number;
     prev: null | PaginatedPageModel;
     next: null | PaginatedPageModel;
-    items: T[];
+    data: T[];
 }
