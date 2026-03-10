@@ -4,29 +4,8 @@ import {TokenObtainPair} from "../models/TokenObtainPair";
 import {retriveLocalStorageData} from "../helpers/helper";
 import {TokenRefresh} from "../models/TokenRefresh";
 import {IPasswordChange} from "../models/IPasswordChange";
+import {axiosInstance} from "../helpers/axiosInstance";
 
-let axiosInstance = axios.create({
-    baseURL:baseUrl
-})
-const PUBLIC_URLS = [
-    urls.auth.base,
-    urls.auth.refreshToken(),
-    urls.auth.requestPasswordRecovery(),
-    // activate перевіряємо через startsWith, бо містить динамічний токен
-];
-axiosInstance.interceptors.request.use(requestObject => {
-    const url = requestObject.url ?? '';
-
-    const isPublic = PUBLIC_URLS.includes(url) ||
-        url.includes('/activate/') ||
-        url.includes('/recovery/');
-
-    if (localStorage.getItem('tokenPair') && !isPublic) {
-        requestObject.headers.set('Authorization', 'Bearer ' + retriveLocalStorageData<TokenRefresh>('tokenPair').access);
-    }
-
-    return requestObject;
-});
 
 export const authServices = {
     authenticate: async (credentials: TokenObtainPair): Promise<TokenRefresh> => {

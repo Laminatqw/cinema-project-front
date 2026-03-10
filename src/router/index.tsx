@@ -5,6 +5,7 @@ import MoviePage from "../pages/MoviePage/MoviePage";
 import MoviesFiltPage from "../pages/MoviePage/MoviesFiltPage";
 import RegisterPage from "../pages/RegisterPage/RegisterPage";
 import ActivationPage from "../pages/ActivationPage/ActivationPage";
+import LoginPage from "../pages/LoginPage/LoginPage";
 
 
 export const router = createBrowserRouter([
@@ -17,6 +18,7 @@ export const router = createBrowserRouter([
             {path:'movies', element:<MoviePage/>},
             {path:'filter', element:<MoviesFiltPage/>},
             {path:'register', element:<RegisterPage/>},
+            {path:'login', element:<LoginPage/>},
             {path:'/activate/:token', element:<ActivationPage/>}
         ]
     }

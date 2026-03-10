@@ -5,10 +5,7 @@ import {TokenRefresh} from "../models/TokenRefresh";
 import {IMovie} from "../models/IMovie";
 import {IRegisterModel} from "../models/IRegisterModel";
 import {retriveLocalStorageData} from "../helpers/helper";
-
-let axiosInstance = axios.create({
-    baseURL:baseUrl
-})
+import {axiosInstance} from "../helpers/axiosInstance";
 
 export const userServices = {
 
