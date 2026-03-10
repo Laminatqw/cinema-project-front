@@ -1,6 +1,6 @@
 import {Link} from "react-router-dom";
 import './Header.css'
-import MovieSearch from "../MovieStringSearchComponent/MovieSearch";
+import MovieSearch from "../MovieSearchBar/MovieSearch";
 const HeaderComponent = () => {
     return (
         <div className={'header'}>
@@ -9,6 +9,7 @@ const HeaderComponent = () => {
             <div><Link to={'/'}>to homepage</Link></div>
             <br/>
             <div><Link to={'/filter'}>to filter</Link></div>
+            <div><Link to={'/register'}>to register</Link></div>
             <MovieSearch/>
         </div>
 
