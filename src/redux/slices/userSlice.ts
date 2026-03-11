@@ -12,7 +12,7 @@ type UserSliceType = {
 }
 const initialState: UserSliceType = {
     users: [],
-    isLoaded: false,
+    isLoaded: true,
     error: '',
     user: null
 
@@ -81,7 +81,7 @@ export const userSlice = createSlice({
                     state.user = null
                     state.users = []
                     state.error = ''
-                    state.isLoaded = false
+                    state.isLoaded = true
                 }
             )
             .addMatcher(isRejected(getUserInfo, updateUserInfo, logoutUser),(state, action)=>{

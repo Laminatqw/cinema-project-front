@@ -3,8 +3,9 @@ import './Header.css'
 import MovieSearch from "../MovieSearchBar/MovieSearch";
 import {useAppDispatch, useAppSelector} from "../../redux/store";
 import {RootState} from "@reduxjs/toolkit/query";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {userActions} from "../../redux/slices/userSlice";
+import UserHeaderComponent from "./UserHeaderComponent";
 const HeaderComponent = () => {
 
     const user = useAppSelector(state=> state.userStore.user);
@@ -17,6 +18,8 @@ const HeaderComponent = () => {
         const tokenPair = localStorage.getItem('tokenPair');
         if (tokenPair) {
             dispatch(userActions.getUserInfo());
+        } else {
+            dispatch(userActions.clearError()); // додатковий action
         }
     }, []);
 
@@ -27,18 +30,8 @@ const HeaderComponent = () => {
             <div><Link to={'/'}>to homepage</Link></div>
             <br/>
             <div><Link to={'/filter'}>to filter</Link></div>
-            <div>
-                {!isLoaded
-                    ? null // або <span>...</span> поки завантажується
-                    : user
-                        ? <span>{user.profile?.name}</span>
-                        : <>
-                            <Link to={'/register'}>to register</Link>
-                            <br/>
-                            <Link to={'/login'}>to login</Link>
-                        </>
-                }
-            </div>
+            <UserHeaderComponent/>
+            <div>{user?.is_staff && <Link to={'/admin'}>Адмін панель</Link>}</div>
             <MovieSearch/>
         </div>
 
