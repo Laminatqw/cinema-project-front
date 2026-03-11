@@ -2,7 +2,6 @@ import {IUser} from "../../models/IUser";
 import {createAsyncThunk, createSlice, isPending, isRejected} from "@reduxjs/toolkit";
 import {userServices} from "../../services/user.services";
 import {AxiosError} from "axios";
-import {IRegisterModel} from "../../models/IRegisterModel";
 
 type UserSliceType = {
     users: IUser[];

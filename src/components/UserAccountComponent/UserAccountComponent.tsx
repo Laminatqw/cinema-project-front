@@ -3,7 +3,7 @@ import {useAppSelector} from "../../redux/store";
 
 const UserAccountComponent = () => {
 
-    const user = useAppSelector(state => state.userStore.user)
+    let user = useAppSelector(state => state.userStore.user)
 
     return (
         <div>

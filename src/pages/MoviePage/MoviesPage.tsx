@@ -3,7 +3,7 @@ import Movies from "../../components/MoviesComponent/MoviesComponent";
 import {useAppDispatch, useAppSelector} from "../../redux/store";
 import {movieActions} from "../../redux/slices/movieSlice";
 
-const MoviePage = () => {
+const MoviesPage = () => {
 
     let dispatch = useAppDispatch();
 
@@ -22,4 +22,4 @@ const MoviePage = () => {
     );
 };
 
-export default MoviePage;
+export default MoviesPage;
