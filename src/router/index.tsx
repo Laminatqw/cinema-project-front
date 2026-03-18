@@ -1,5 +1,5 @@
 import {createBrowserRouter} from "react-router-dom";
-import MainLayout from "../layouts/MainLayout";
+import MainLayout from "../layouts/MainLayout/MainLayout";
 import HomePage from "../pages/HomePage/HomePage";
 import MoviesFiltPage from "../pages/MoviePage/MoviesFiltPage";
 import RegisterPage from "../pages/RegisterPage/RegisterPage";
@@ -9,6 +9,9 @@ import AdminPage from "../pages/AdminPage/AdminPage";
 import UserAccountComponent from "../components/UserAccountComponent/UserAccountComponent";
 import MovieDetailPage from "../pages/MovieDetailPage/MovieDetailPage";
 import MoviesPage from "../pages/MoviePage/MoviesPage";
+import HallAddComponent from "../components/CreateComponent/HallAddComponent/HallAddComponent";
+import MovieAddComponent from "../components/CreateComponent/MovieAddComponent/MovieAddComponent";
+import AdminLayout from "../layouts/AdminLayout/adminLayout";
 
 
 export const router = createBrowserRouter([
@@ -25,7 +28,18 @@ export const router = createBrowserRouter([
             {path:'login', element:<LoginPage/>},
             {path:'activate/:token', element:<ActivationPage/>},
             {path:'admin', element:<AdminPage/>},
-            {path:'account', element:<UserAccountComponent/>}
+            {path:'account', element:<UserAccountComponent/>},
+
+            {
+                path: 'admin',
+                element: <AdminLayout/>,
+                children: [
+                    {index: true, element: <AdminPage/>}, // головна адмін панелі
+                    {path: 'movies/add', element: <MovieAddComponent/>},
+                    {path: 'halls/add', element: <HallAddComponent/>},
+                ]
+            }
+
         ]
     }
 ])
