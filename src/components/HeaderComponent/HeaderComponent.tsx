@@ -2,7 +2,6 @@ import {Link} from "react-router-dom";
 import './Header.css'
 import MovieSearch from "../MovieSearchBar/MovieSearch";
 import {useAppDispatch, useAppSelector} from "../../redux/store";
-import {RootState} from "@reduxjs/toolkit/query";
 import {useEffect, useState} from "react";
 import {userActions} from "../../redux/slices/userSlice";
 import UserHeaderComponent from "./UserHeaderComponent";
@@ -22,6 +21,9 @@ const HeaderComponent = () => {
             dispatch(userActions.clearError()); // додатковий action
         }
     }, []);
+
+
+    console.log('isLoaded:', isLoaded, 'user:', user);
 
     return (
         <div className={'header'}>

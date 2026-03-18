@@ -85,6 +85,7 @@ export const userSlice = createSlice({
             )
             .addMatcher(isRejected(getUserInfo, updateUserInfo, logoutUser),(state, action)=>{
                 state.error = action.payload as string
+                state.isLoaded = true
             })
             .addMatcher(isPending(getUserInfo, updateUserInfo, logoutUser),(state)=>{
                 state.isLoaded = false
