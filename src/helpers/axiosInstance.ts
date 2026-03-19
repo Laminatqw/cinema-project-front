@@ -19,6 +19,7 @@ axiosInstance.interceptors.request.use(requestObject => {
         url.includes('/activate/') ||
         url.includes('/recovery/');
 
+
     if (localStorage.getItem('tokenPair') && !isPublic) {
         requestObject.headers.set('Authorization', 'Bearer ' + retriveLocalStorageData<TokenRefresh>('tokenPair').access);
     }

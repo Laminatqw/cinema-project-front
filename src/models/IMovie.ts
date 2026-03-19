@@ -7,7 +7,8 @@ export interface IMovie{
     picture: string|null
     trailer_link:string
     rating:number
-    genres: IGenre[]
+    genres: number[]          // для запису
+    genres_detail: IGenre[]
     year:number
     release_date: string|null
     end_date:string|null

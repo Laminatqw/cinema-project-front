@@ -26,7 +26,7 @@ const MovieDetailComponent = () => {
             <p>Рік: {movie.year}</p>
             <p>Тривалість: {movie.length} хв</p>
             <p>Рейтинг: {movie.rating}</p>
-            <p>Жанри: {movie.genres.map(g => g.genre).join(', ')}</p>
+            <p>Жанри: {movie.genres.map(g => g).join(', ')}</p>
             {movie.release_date && <p>Дата виходу: {movie.release_date}</p>}
             {movie.end_date && <p>Останній показ: {movie.end_date}</p>}
             <p>{movie.is_now_showing ? '🟢 Зараз у прокаті' : '🔴 Не в прокаті'}</p>

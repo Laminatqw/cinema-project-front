@@ -19,7 +19,7 @@ export const urls = {
         base:'/movies',
         byId:(id:number)=> urls.movies.base + '/' + id,
         addPicture:(id:number)=> urls.movies.byId(id) + '/poster',
-        genres:()=> urls.movies + '/genres',
+        genres:()=> urls.movies.base + '/genres',
         genresById:(id:number) => urls.movies.genres + '/' +  id,
     },
     halls:{
