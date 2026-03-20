@@ -9,9 +9,10 @@ import AdminPage from "../pages/AdminPage/AdminPage";
 import UserAccountComponent from "../components/UserAccountComponent/UserAccountComponent";
 import MovieDetailPage from "../pages/MovieDetailPage/MovieDetailPage";
 import MoviesPage from "../pages/MoviePage/MoviesPage";
-import HallAddComponent from "../components/CreateComponent/HallAddComponent/HallAddComponent";
-import MovieControlComponent from "../components/CreateComponent/MovieAddComponent/MovieControlComponent";
+import HallControlComponent from "../components/CreateComponent/HallControlComponent/HallControlComponent";
+import MovieControlComponent from "../components/CreateComponent/MovieControlComponent/MovieControlComponent";
 import AdminLayout from "../layouts/AdminLayout/adminLayout";
+import GenreControlComponent from "../components/CreateComponent/GenreControlComponent/GenreControlComponent";
 
 
 export const router = createBrowserRouter([
@@ -36,7 +37,8 @@ export const router = createBrowserRouter([
                 children: [
                     {index: true, element: <AdminPage/>}, // головна адмін панелі
                     {path: 'movies', element: <MovieControlComponent/>},
-                    {path: 'halls/add', element: <HallAddComponent/>},
+                    {path: 'halls', element: <HallControlComponent/>},
+                    {path: 'genres', element: <GenreControlComponent/>}
                 ]
             }
 
