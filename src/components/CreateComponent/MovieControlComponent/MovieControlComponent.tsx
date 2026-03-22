@@ -67,7 +67,7 @@ const MovieControlComponent = () => {
         );
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
         const payload = {
             ...formData,

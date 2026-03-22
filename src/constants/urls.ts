@@ -26,6 +26,7 @@ export const urls = {
         base:'/halls',
         byId:(id:number)=> urls.halls.base + '/' + id,
         seats:(id:number) => urls.halls.byId(id) + '/seats',
+        seatsUpdate:(id:number) => urls.halls.seats(id) + '/update',
         seatById:(id:number)=>  urls.halls.base + '/seats/' + id
     },
     sessions:{

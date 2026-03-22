@@ -2,10 +2,9 @@ import axios from "axios";
 import {baseUrl, urls} from "../constants/urls";
 import {IHall} from "../models/IHall";
 import {IHallSeat} from "../models/IHallSeat";
+import {axiosInstance} from "../helpers/axiosInstance";
 
-let axiosInstance = axios.create({
-    baseURL:baseUrl
-})
+
 
 export const hallServices = {
     getAll: async (): Promise<IHall[]> => {
@@ -36,17 +35,17 @@ export const hallServices = {
         let response = await axiosInstance.get<IHallSeat>(urls.halls.byId(id));
         return response.data;
     },
-    createSeats: async (hallId: number, payload: Partial<IHallSeat> | Partial<IHallSeat>[]): Promise<IHallSeat[]> => {
-        let response = await axiosInstance.post<{data:IHallSeat[]}>(urls.halls.seats(hallId), payload);
-        return response.data.data;
+    createSeats: async (hallId: number, payload: Partial<IHallSeat> | Partial<IHallSeat>[]): Promise<{created: number}> => {
+        let response = await axiosInstance.post(urls.halls.seats(hallId), payload);
+        return response.data;
     },
     deleteSeat: async (seatId: number): Promise<IHallSeat> => {
-        let response = await axiosInstance.get<IHallSeat>(urls.halls.seatById(seatId));
+        let response = await axiosInstance.delete<IHallSeat>(urls.halls.seatById(seatId));
         return response.data;
     },
-    updateSeat: async (seatId: number, payload: Partial<IHallSeat>): Promise<IHallSeat> => {
-        let response = await axiosInstance.patch<IHallSeat>(urls.halls.seatById(seatId), payload);
+    updateSeats: async (hallId: number, payload: Partial<IHallSeat>[]): Promise<{updated: number}> => {
+        let response = await axiosInstance.put(urls.halls.seatsUpdate(hallId), payload);
         return response.data;
-    }
+    },
 
 }

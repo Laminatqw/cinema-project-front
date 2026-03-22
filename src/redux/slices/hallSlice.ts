@@ -54,7 +54,7 @@ let createHall = createAsyncThunk<IHall, IHall>(
             return thunkAPI.fulfillWithValue(hall)
         } catch (e) {
             let error = e as AxiosError<{detail:string}>;
-            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch hall')
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to create hall')
         }
     }
 )
@@ -66,7 +66,7 @@ let updateHall = createAsyncThunk<IHall, {id: number, payload: Partial<IHall>}>(
             return thunkAPI.fulfillWithValue(hall)
         } catch (e) {
             let error = e as AxiosError<{detail:string}>;
-            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch hall')
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to update hall')
         }
     }
 )
@@ -78,7 +78,7 @@ let deleteHall = createAsyncThunk<IHall, number>(
             return thunkAPI.fulfillWithValue(hall)
         } catch (e) {
             let error = e as AxiosError<{detail:string}>;
-            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch hall')
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to delete hall')
         }
     }
 )
@@ -90,7 +90,7 @@ let getAllSeats = createAsyncThunk<IHallSeat[], number>(
             return thunkAPI.fulfillWithValue(halls)
         } catch (e) {
             let error = e as AxiosError<{detail:string}>;
-            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch halls')
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch seats')
         }
     }
 )
@@ -101,32 +101,31 @@ let getHallSeatById = createAsyncThunk<IHallSeat, number>(
             return thunkAPI.fulfillWithValue(seat)
         } catch (e) {
             let error = e as AxiosError<{detail:string}>;
-            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch hall')
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch seat')
         }
     }
 )
 
-let createSeats = createAsyncThunk<IHallSeat[], { id: number; seats: Partial<IHallSeat>|Partial<IHallSeat>[];
-} >(
-    'hallSlice/createSeat', async ({id, seats}, thunkAPI)=>{
+let createSeats = createAsyncThunk<{created: number}, { id: number; seats: Partial<IHallSeat>[] }>(
+    'hallSlice/createSeat', async ({id, seats}, thunkAPI) => {
         try {
-            let seat = await hallServices.createSeats(id, seats);
-            return thunkAPI.fulfillWithValue(seat)
+            let result = await hallServices.createSeats(id, seats);
+            return thunkAPI.fulfillWithValue(result);
         } catch (e) {
-            let error = e as AxiosError<{detail:string}>;
-            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch hall')
+            let error = e as AxiosError<{detail: string}>;
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to create seat(s)');
         }
     }
 )
 
-let updateSeat = createAsyncThunk<IHallSeat, {id: number, payload: Partial<IHallSeat>}>(
-    'hallSlice/updateSeat', async ({id, payload}, thunkAPI)=>{
+let updateSeats = createAsyncThunk<{updated: number}, {id: number, seats: Partial<IHallSeat>[]}>(
+    'hallSlice/bulkUpdateSeats', async ({id, seats}, thunkAPI) => {
         try {
-            let hall = await hallServices.updateSeat(id, payload);
-            return thunkAPI.fulfillWithValue(hall)
+            let result = await hallServices.updateSeats(id, seats);
+            return thunkAPI.fulfillWithValue(result);
         } catch (e) {
-            let error = e as AxiosError<{detail:string}>;
-            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch hall')
+            let error = e as AxiosError<{detail: string}>;
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to update seats');
         }
     }
 )
@@ -138,7 +137,7 @@ let deleteSeat = createAsyncThunk<IHallSeat, number>(
             return thunkAPI.fulfillWithValue(hall)
         } catch (e) {
             let error = e as AxiosError<{detail:string}>;
-            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch hall')
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to delete seat')
         }
     }
 )
@@ -171,6 +170,7 @@ export const hallSlice = createSlice({
                 const idx = state.halls.findIndex(h => h.id === action.payload.id);
                 if (idx !== -1) state.halls[idx] = action.payload;
             })
+
             .addCase(deleteHall.fulfilled, (state, action: PayloadAction<IHall>) => {
                 state.hall = null;
                 state.halls = state.halls.filter(h => h.id !== action.payload.id);
@@ -184,13 +184,12 @@ export const hallSlice = createSlice({
             .addCase(getHallSeatById.fulfilled, (state, action: PayloadAction<IHallSeat>) => {
                 state.seat = action.payload;
             })
-            .addCase(createSeats.fulfilled, (state, action: PayloadAction<IHallSeat[]>) => {
-                state.seats.push(...action.payload);
+            .addCase(createSeats.fulfilled, (state) => {
+                // нічого не робимо, або просто ігноруємо payload
+                state.isLoaded = false;
             })
-            .addCase(updateSeat.fulfilled, (state, action: PayloadAction<IHallSeat>) => {
-                state.seat = action.payload;
-                const idx = state.seats.findIndex(s => s.id === action.payload.id);
-                if (idx !== -1) state.seats[idx] = action.payload;
+            .addCase(updateSeats.fulfilled, (state) => {
+                state.isLoaded = false;
             })
             .addCase(deleteSeat.fulfilled, (state, action: PayloadAction<IHallSeat>) => {
                 state.seat = null;
@@ -202,7 +201,7 @@ export const hallSlice = createSlice({
             .addMatcher(
                 isPending(
                     getAllHalls, getHallById, createHall, updateHall, deleteHall,
-                    getAllSeats, getHallSeatById, createSeats, updateSeat, deleteSeat
+                    getAllSeats, getHallSeatById, createSeats, updateSeats, deleteSeat
                 ),
                 (state) => {
                     state.isLoaded = true;
@@ -212,7 +211,7 @@ export const hallSlice = createSlice({
             .addMatcher(
                 isFulfilled(
                     getAllHalls, getHallById, createHall, updateHall, deleteHall,
-                    getAllSeats, getHallSeatById, createSeats, updateSeat, deleteSeat
+                    getAllSeats, getHallSeatById, createSeats, updateSeats, deleteSeat
                 ),
                 (state) => {
                     state.isLoaded = false;
@@ -221,7 +220,7 @@ export const hallSlice = createSlice({
             .addMatcher(
                 isRejected(
                     getAllHalls, getHallById, createHall, updateHall, deleteHall,
-                    getAllSeats, getHallSeatById, createSeats, updateSeat, deleteSeat
+                    getAllSeats, getHallSeatById, createSeats, updateSeats, deleteSeat
                 ),
                 (state, action) => {
                     state.isLoaded = false;
@@ -234,5 +233,5 @@ export const hallSlice = createSlice({
 export const hallActions = {
     ...hallSlice.actions,
     getAllHalls, getHallById, createHall, updateHall, deleteHall,
-    getAllSeats, getHallSeatById, createSeats, updateSeat, deleteSeat
+    getAllSeats, getHallSeatById, createSeats, updateSeats, deleteSeat
 }
