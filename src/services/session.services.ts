@@ -1,34 +1,50 @@
-import axios from "axios";
-import {baseUrl, urls} from "../constants/urls";
-import {IMovie} from "../models/IMovie";
+import {urls} from "../constants/urls";
 import {ISession} from "../models/ISession";
-import {createSlice} from "@reduxjs/toolkit";
+import {axiosInstance} from "../helpers/axiosInstance";
+import {ISession_price} from "../models/ISession_price";
 
-let axiosInstance = axios.create({
-    baseURL:baseUrl
-})
 
-export const sessionServices = {
-    getAll: async (): Promise<ISession[]> => {
-        let response = await axiosInstance.get<{data:ISession[]}>(urls.sessions.base);
-        return response.data.data;
-    },
-    getById: async (id: number): Promise<ISession> => {
-        let response = await axiosInstance.get<ISession>(urls.sessions.byId(id));
-        return response.data;
-    },
-    createSession: async (payload: Partial<ISession>): Promise<ISession> => {
-        let response = await axiosInstance.post<ISession>(urls.sessions.base, payload);
-        return response.data;
-    },
-    updateSession: async (id: number, payload: Partial<ISession>): Promise<ISession> => {
-        let response = await axiosInstance.patch<ISession>(urls.sessions.byId(id), payload);
-        return response.data;
-    },
-    deleteSession: async (id: number): Promise<ISession> => {
-        let response = await axiosInstance.get<ISession>(urls.sessions.byId(id));
-        return response.data;
-    },
-}
+
+    export const sessionServices = {
+        getAll: async (): Promise<ISession[]> => {
+            let response = await axiosInstance.get<{data:ISession[]}>(urls.sessions.base);
+            return response.data.data;
+        },
+        getById: async (id: number): Promise<ISession> => {
+            let response = await axiosInstance.get<ISession>(urls.sessions.byId(id));
+            return response.data;
+        },
+        createSession: async (payload: Partial<ISession>): Promise<ISession> => {
+            let response = await axiosInstance.post<ISession>(urls.sessions.base, payload);
+            return response.data;
+        },
+        updateSession: async (id: number, payload: Partial<ISession>): Promise<ISession> => {
+            let response = await axiosInstance.patch<ISession>(urls.sessions.byId(id), payload);
+            return response.data;
+        },
+        deleteSession: async (id: number): Promise<ISession> => {
+            let response = await axiosInstance.delete<ISession>(urls.sessions.byId(id));
+            return response.data;
+        },
+
+        //prices
+
+        getPrices: async (sessionId: number): Promise<ISession_price[]> => {
+            let response = await axiosInstance.get<{data: ISession_price[]}>(urls.sessions.price(sessionId));
+            return response.data.data;
+        },
+        createPrice: async (sessionId: number, payload: Partial<ISession_price>): Promise<ISession_price> => {
+            let response = await axiosInstance.post<ISession_price>(urls.sessions.price(sessionId), payload);
+            return response.data;
+        },
+        updatePrice: async (sessionId: number, id: number, payload: Partial<ISession_price>): Promise<ISession_price> => {
+            let response = await axiosInstance.patch<ISession_price>(urls.sessions.priceById(sessionId, id), payload);
+            return response.data;
+        },
+        deletePrice: async (sessionId: number, id: number): Promise<ISession_price> => {
+            let response = await axiosInstance.delete<ISession_price>(urls.sessions.priceById(sessionId, id));
+            return response.data;
+        },
+    }
 
 

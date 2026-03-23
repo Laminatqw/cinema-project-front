@@ -7,8 +7,9 @@ const AdminLayout = () => {
             <aside style={{width: '200px', display: 'flex', flexDirection: 'column', gap: '10px', padding: '20px'}}>
                 <Link to="/admin">Dashboard</Link>
                 <Link to="/admin/movies">Управління фільмами</Link>
-                <Link to="/admin/halls">Додати зал</Link>
+                <Link to="/admin/halls">Управління залами</Link>
                 <Link to={"/admin/genres"}>Управління жанрами</Link>
+                <Link to={"/admin/sessions"}>Управління сесіями</Link>
             </aside>
 
             <main style={{flex: 1, padding: '20px'}}>

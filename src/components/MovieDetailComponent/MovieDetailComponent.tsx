@@ -18,7 +18,7 @@ const MovieDetailComponent = () => {
     }, [id]);
 
     if (!movie) return <p>Завантаження...</p>;
-
+    //TODO:make correct genres display in MovieDetailComponent
     return (
         <div>
             {movie.picture && <img src={movie.picture} alt={movie.name}/>}

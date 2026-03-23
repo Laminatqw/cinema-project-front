@@ -2,20 +2,23 @@ import {ISession} from "../../models/ISession";
 import {createAsyncThunk, createSlice, isFulfilled, isPending, isRejected, PayloadAction} from "@reduxjs/toolkit";
 import {sessionServices} from "../../services/session.services";
 import {AxiosError} from "axios";
+import {ISession_price} from "../../models/ISession_price";
 
 
 type SessionSliceType = {
     sessions: ISession[],
-    isLoaded:boolean,
-    session:ISession|null,
-    error:string
+    isLoaded: boolean,
+    session: ISession | null,
+    prices: ISession_price[],
+    error: string
 }
 
-const initialState:SessionSliceType = {
-    sessions:[],
-    isLoaded:false,
-    session:null,
-    error:''
+const initialState: SessionSliceType = {
+    sessions: [],
+    isLoaded: false,
+    session: null,
+    prices: [],
+    error: ''
 }
 
 
@@ -42,8 +45,8 @@ let getSessionById = createAsyncThunk<ISession, number>(
     }
 )
 
-let createSession = createAsyncThunk<ISession, ISession>(
-    'sessionSlice/createSession', async (payload, thunkAPI)=>{
+let createSession = createAsyncThunk<ISession, Partial<ISession>>(
+    'sessionSlice/createSession', async (payload, thunkAPI) => {
         try {
             let session = await sessionServices.createSession(payload);
             return thunkAPI.fulfillWithValue(session)
@@ -77,6 +80,56 @@ let deleteSession = createAsyncThunk<ISession, number>(
         }
     }
 )
+//price
+
+let getPrices = createAsyncThunk<ISession_price[], number>(
+    'sessionSlice/getPrices', async (sessionId, thunkAPI) => {
+        try {
+            let prices = await sessionServices.getPrices(sessionId);
+            return thunkAPI.fulfillWithValue(prices)
+        } catch (e) {
+            let error = e as AxiosError<{detail: string}>;
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch prices')
+        }
+    }
+)
+
+let createPrice = createAsyncThunk<ISession_price, {sessionId: number, payload: Partial<ISession_price>}>(
+    'sessionSlice/createPrice', async ({sessionId, payload}, thunkAPI) => {
+        try {
+            let price = await sessionServices.createPrice(sessionId, payload);
+            return thunkAPI.fulfillWithValue(price)
+        } catch (e) {
+            let error = e as AxiosError<{detail: string}>;
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to create price')
+        }
+    }
+)
+
+let updatePrice = createAsyncThunk<ISession_price, {sessionId: number, id: number, payload: Partial<ISession_price>}>(
+    'sessionSlice/updatePrice', async ({sessionId, id, payload}, thunkAPI) => {
+        try {
+            let price = await sessionServices.updatePrice(sessionId, id, payload);
+            return thunkAPI.fulfillWithValue(price)
+        } catch (e) {
+            let error = e as AxiosError<{detail: string}>;
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to update price')
+        }
+    }
+)
+
+let deletePrice = createAsyncThunk<ISession_price, {sessionId: number, id: number}>(
+    'sessionSlice/deletePrice', async ({sessionId, id}, thunkAPI) => {
+        try {
+            let price = await sessionServices.deletePrice(sessionId, id);
+            return thunkAPI.fulfillWithValue(price)
+        } catch (e) {
+            let error = e as AxiosError<{detail: string}>;
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to delete price')
+        }
+    }
+)
+
 
 export const sessionSlice = createSlice({
     name: 'sessionSlice',
@@ -84,6 +137,7 @@ export const sessionSlice = createSlice({
     reducers: {
         clearError: (state) => { state.error = ''; },
         clearSession: (state) => { state.session = null; },
+        clearPrices: (state) => { state.prices = []; },
     },
     extraReducers: (builder) => {
 
@@ -106,23 +160,39 @@ export const sessionSlice = createSlice({
                 state.session = null;
                 state.sessions = state.sessions.filter(s => s.id !== action.payload.id);
             })
+            .addCase(getPrices.fulfilled, (state, action) => {
+                state.prices = action.payload;
+            })
+            .addCase(createPrice.fulfilled, (state, action) => {
+                state.prices.push(action.payload);
+            })
+            .addCase(updatePrice.fulfilled, (state, action) => {
+                const idx = state.prices.findIndex(p => p.id === action.payload.id);
+                if (idx !== -1) state.prices[idx] = action.payload;
+            })
+            .addCase(deletePrice.fulfilled, (state, action) => {
+                state.prices = state.prices.filter(p => p.id !== action.payload.id);
+            })
 
         builder
             .addMatcher(
-                isPending(getAllSessions, getSessionById, createSession, updateSession, deleteSession),
+                isPending(getAllSessions, getSessionById, createSession, updateSession, deleteSession,
+                    getPrices, createPrice, updatePrice, deletePrice),
                 (state) => {
                     state.isLoaded = true;
                     state.error = '';
                 }
             )
             .addMatcher(
-                isFulfilled(getAllSessions, getSessionById, createSession, updateSession, deleteSession),
+                isFulfilled(getAllSessions, getSessionById, createSession, updateSession, deleteSession,
+                    getPrices, createPrice, updatePrice, deletePrice),
                 (state) => {
                     state.isLoaded = false;
                 }
             )
             .addMatcher(
-                isRejected(getAllSessions, getSessionById, createSession, updateSession, deleteSession),
+                isRejected(getAllSessions, getSessionById, createSession, updateSession, deleteSession,
+                    getPrices, createPrice, updatePrice, deletePrice),
                 (state, action) => {
                     state.isLoaded = false;
                     state.error = action.payload as string ?? 'Unknown error';
@@ -133,7 +203,8 @@ export const sessionSlice = createSlice({
 
 export const sessionActions = {
     ...sessionSlice.actions,
-    getAllSessions, getSessionById, createSession, updateSession, deleteSession
+    getAllSessions, getSessionById, createSession, updateSession, deleteSession,
+    getPrices, createPrice, updatePrice, deletePrice
 }
 
 

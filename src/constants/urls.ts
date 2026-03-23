@@ -32,6 +32,8 @@ export const urls = {
     sessions:{
         base:'/sessions',
         byId:(id:number)=> urls.sessions.base + '/' + id,
+        price:(sessionID:number) => urls.sessions.base + sessionID + '/prices',
+        priceById:(sessionID:number, id:number) => urls.sessions.base + sessionID + '/prices/' + id,
     },
     tickets:{
         base:'/tickets',

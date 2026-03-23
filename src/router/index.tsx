@@ -13,6 +13,7 @@ import HallControlComponent from "../components/CreateComponent/HallControlCompo
 import MovieControlComponent from "../components/CreateComponent/MovieControlComponent/MovieControlComponent";
 import AdminLayout from "../layouts/AdminLayout/adminLayout";
 import GenreControlComponent from "../components/CreateComponent/GenreControlComponent/GenreControlComponent";
+import SessionControlComponent from "../components/CreateComponent/SessionControlComponent/SessionControlComponent";
 
 
 export const router = createBrowserRouter([
@@ -38,7 +39,8 @@ export const router = createBrowserRouter([
                     {index: true, element: <AdminPage/>}, // головна адмін панелі
                     {path: 'movies', element: <MovieControlComponent/>},
                     {path: 'halls', element: <HallControlComponent/>},
-                    {path: 'genres', element: <GenreControlComponent/>}
+                    {path: 'genres', element: <GenreControlComponent/>},
+                    {path: 'sessions', element: <SessionControlComponent/>}
                 ]
             }
 
