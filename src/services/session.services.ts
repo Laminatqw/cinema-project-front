@@ -8,6 +8,7 @@ import {ISession_price} from "../models/ISession_price";
     export const sessionServices = {
         getAll: async (): Promise<ISession[]> => {
             let response = await axiosInstance.get<{data:ISession[]}>(urls.sessions.base);
+            console.log(response.data);
             return response.data.data;
         },
         getById: async (id: number): Promise<ISession> => {
@@ -15,16 +16,21 @@ import {ISession_price} from "../models/ISession_price";
             return response.data;
         },
         createSession: async (payload: Partial<ISession>): Promise<ISession> => {
-            let response = await axiosInstance.post<ISession>(urls.sessions.base, payload);
-            return response.data;
+            try {
+                let response = await axiosInstance.post<ISession>(urls.sessions.base, payload);
+                return response.data;
+            } catch (e: any) {
+                console.log(e.response.data); // деталі помилки від Django
+                throw e;
+            }
         },
         updateSession: async (id: number, payload: Partial<ISession>): Promise<ISession> => {
             let response = await axiosInstance.patch<ISession>(urls.sessions.byId(id), payload);
             return response.data;
         },
-        deleteSession: async (id: number): Promise<ISession> => {
-            let response = await axiosInstance.delete<ISession>(urls.sessions.byId(id));
-            return response.data;
+        deleteSession: async (id: number): Promise<number> => {
+            await axiosInstance.delete(urls.sessions.byId(id));
+            return id;
         },
 
         //prices

@@ -6,6 +6,7 @@ import { hallActions } from "../../../redux/slices/hallSlice";
 import { ISession } from "../../../models/ISession";
 import { ISession_price } from "../../../models/ISession_price";
 import { SeatType } from "../../../models/IHallSeat";
+import SearchSelect from "../../SearchSelectComponent/SearchSelectComponent";
 
 const SEAT_TYPES: SeatType[] = ['regular', 'vip', 'disabled'];
 
@@ -57,19 +58,22 @@ const SessionControlComponent = () => {
         }));
     };
 
+    const formatDateTime = (dt: string | null) => {
+        if (!dt) return '';
+        return dt.slice(0, 16); // '2024-01-15T14:30:00Z' -> '2024-01-15T14:30'
+    };
+
     const handleSelect = (session: ISession) => {
         setSelectedSession(session);
         setMode('edit');
         setFormData({
             movie: session.movie,
             hall: session.hall,
-            start_time: session.start_time,
-            end_time: session.end_time,
-            is_active: session.is_active,
+            start_time: formatDateTime(session.start_time),
+            end_time: formatDateTime(session.end_time),
         });
         setShowPrices(false);
     };
-
     const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
         if (mode === 'create') {
@@ -152,38 +156,38 @@ const SessionControlComponent = () => {
 
                 <div>
                     <label>Фільм</label>
-                    <select name="movie" value={formData.movie || ''} onChange={handleChange} required>
-                        <option value="">— Оберіть фільм —</option>
-                        {movies.map(m => (
-                            <option key={m.id} value={m.id}>{m.name}</option>
-                        ))}
-                    </select>
+                    <SearchSelect
+                        items={movies}
+                        value={formData.movie}
+                        getLabel={m => m.name}
+                        getId={m => m.id}
+                        placeholder="Пошук фільму..."
+                        onSelect={id => setFormData(prev => ({...prev, movie: id}))}
+                    />
                 </div>
                 <div>
                     <label>Зал</label>
-                    <select name="hall" value={formData.hall || ''} onChange={handleChange} required>
-                        <option value="">— Оберіть зал —</option>
-                        {halls.map(h => (
-                            <option key={h.id} value={h.id}>{h.title}</option>
-                        ))}
-                    </select>
+                    <SearchSelect
+                        items={halls}
+                        value={formData.hall}
+                        getLabel={h => h.title}
+                        getId={h => h.id}
+                        placeholder="Пошук залу..."
+                        onSelect={id => setFormData(prev => ({...prev, hall: id}))}
+                    />
                 </div>
                 <div>
                     <label>Початок</label>
-                    <input name="start_time" type="datetime-local" value={formData.start_time || ''} onChange={handleChange} required />
+                    <input name="start_time" type="datetime-local" value={formData.start_time || ''}
+                           onChange={handleChange} required/>
                 </div>
                 <div>
                     <label>Кінець</label>
-                    <input name="end_time" type="datetime-local" value={formData.end_time || ''} onChange={handleChange} required />
-                </div>
-                <div>
-                    <label>
-                        <input name="is_active" type="checkbox" checked={formData.is_active || false} onChange={handleChange} />
-                        Активна
-                    </label>
+                    <input name="end_time" type="datetime-local" value={formData.end_time || ''} onChange={handleChange}
+                           required/>
                 </div>
 
-                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {error && <p style={{color: 'red'}}>{error}</p>}
                 <button type="submit">{mode === 'create' ? 'Створити' : 'Зберегти'}</button>
                 {mode === 'edit' && <button type="button" onClick={handleReset}>Скасувати</button>}
             </form>
@@ -194,7 +198,7 @@ const SessionControlComponent = () => {
                     <h3>Ціни для сесії #{selectedSession.id} — {getMovieName(selectedSession.movie)}</h3>
 
                     <form onSubmit={handlePriceSubmit}>
-                        <select name="seat_type" value={priceFormData.seat_type} onChange={handlePriceChange}>
+                    <select name="seat_type" value={priceFormData.seat_type} onChange={handlePriceChange}>
                             {SEAT_TYPES.map(t => (
                                 <option key={t} value={t}>{t}</option>
                             ))}

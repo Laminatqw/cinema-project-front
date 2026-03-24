@@ -51,8 +51,10 @@ let createSession = createAsyncThunk<ISession, Partial<ISession>>(
             let session = await sessionServices.createSession(payload);
             return thunkAPI.fulfillWithValue(session)
         } catch (e) {
+
             let error = e as AxiosError<{detail:string}>;
             return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch hall')
+
         }
     }
 )
@@ -69,14 +71,14 @@ let updateSession = createAsyncThunk<ISession, {id: number, payload: Partial<ISe
     }
 )
 
-let deleteSession = createAsyncThunk<ISession, number>(
-    'sessionSlice/deleteSession', async (id, thunkAPI)=>{
+let deleteSession = createAsyncThunk<number, number>(
+    'sessionSlice/deleteSession', async (id, thunkAPI) => {
         try {
-            let session = await sessionServices.deleteSession(id);
-            return thunkAPI.fulfillWithValue(session)
+            await sessionServices.deleteSession(id);
+            return thunkAPI.fulfillWithValue(id);
         } catch (e) {
-            let error = e as AxiosError<{detail:string}>;
-            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch hall')
+            let error = e as AxiosError<{detail: string}>;
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to delete session');
         }
     }
 )
@@ -158,7 +160,7 @@ export const sessionSlice = createSlice({
             })
             .addCase(deleteSession.fulfilled, (state, action) => {
                 state.session = null;
-                state.sessions = state.sessions.filter(s => s.id !== action.payload.id);
+                state.sessions = state.sessions.filter(s => s.id !== action.payload);
             })
             .addCase(getPrices.fulfilled, (state, action) => {
                 state.prices = action.payload;
