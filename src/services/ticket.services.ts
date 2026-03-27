@@ -1,23 +1,30 @@
 import axios from "axios";
 import {baseUrl, urls} from "../constants/urls";
 import {ITickets} from "../models/ITickets";
+import { axiosInstance } from "../helpers/axiosInstance";
+import { ITicketDetail } from "../models/ITicketDetail";
 
-let axiosInstance = axios.create({
-    baseURL:baseUrl
-})
 
 export const ticketServices = {
     getTicket: async (): Promise<ITickets[]> => {
-        let response = await axiosInstance.get<ITickets[]>(urls.tickets.base);
-        return response.data;
+        let response = await axiosInstance.get<{data: ITickets[]}>(urls.tickets.base);
+        return response.data.data;
     },
-    createTicket: async (payload: Partial<ITickets>): Promise<ITickets> => {
-        let response = await axiosInstance.post<ITickets>(urls.tickets.base, payload);
+    createTicket: async (payload: Partial<ITickets> | Partial<ITickets>[]): Promise<ITickets | {created: number}> => {
+        try {
+            let response = await axiosInstance.post(urls.tickets.base, payload);
+            return response.data;
+        } catch (e: any) {
+            console.log(e.response.data);
+            throw e;
+        }
+    },
+    getTicketById: async (id: number): Promise<ITicketDetail> => {
+        let response = await axiosInstance.get<ITicketDetail>(urls.tickets.byId(id));
         return response.data;
     },
     getQrCode: async (ticketToken: string): Promise<Blob> => {
         const { data } = await axiosInstance.get(urls.tickets.qRCode(ticketToken), { responseType: 'blob' });
-
         return data;
     }
 }

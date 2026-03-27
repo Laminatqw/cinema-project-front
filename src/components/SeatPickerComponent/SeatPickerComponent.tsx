@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {ISession} from "../../models/ISession";
-import {useAppDispatch, useAppSelector} from "../../redux/store";
-import {ISessionSeat} from "../../models/ISessionSeat";
-import {sessionActions} from "../../redux/slices/sessionSlice";
-import {ticketActions} from "../../redux/slices/tickerSlice";
+import React, { useEffect, useState } from 'react';
+import { ISession } from "../../models/ISession";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { ISessionSeat } from "../../models/ISessionSeat";
+import { sessionActions } from "../../redux/slices/sessionSlice";
+import { ticketActions } from "../../redux/slices/tickerSlice";
 
 const SEAT_COLORS: Record<string, string> = {
     regular: '#4a90e2',
@@ -20,49 +20,65 @@ const SeatPickerComponent = ({ session }: IProps) => {
     const { sessionSeats, prices } = useAppSelector(state => state.sessionStore);
     const user = useAppSelector(state => state.userStore.user);
 
-    const [selectedSeat, setSelectedSeat] = useState<ISessionSeat | null>(null);
+    const [selectedSeats, setSelectedSeats] = useState<ISessionSeat[]>([]);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         dispatch(sessionActions.getSessionSeats(session.id));
         dispatch(sessionActions.getPrices(session.id));
-        setSelectedSeat(null);
+        setSelectedSeats([]);
         setSuccess(false);
         setError(null);
     }, [session.id]);
 
-    // будуємо сітку з місць
     const maxRow = sessionSeats.length > 0 ? Math.max(...sessionSeats.map(s => s.row)) : 0;
     const maxNumber = sessionSeats.length > 0 ? Math.max(...sessionSeats.map(s => s.number)) : 0;
 
     const grid: (ISessionSeat | null)[][] = Array.from({ length: maxRow }, (_, rowIdx) =>
-        Array.from({ length: maxNumber }, (_, seatIdx) => {
-            return sessionSeats.find(s => s.row === rowIdx + 1 && s.number === seatIdx + 1) ?? null;
-        })
+        Array.from({ length: maxNumber }, (_, seatIdx) =>
+            sessionSeats.find(s => s.row === rowIdx + 1 && s.number === seatIdx + 1) ?? null
+        )
     );
 
     const getPrice = (seat: ISessionSeat) => {
         const priceObj = prices.find(p => p.seat_type === seat.seat_type);
-        return priceObj ? `${priceObj.price} грн` : '—';
+        return priceObj ? Number(priceObj.price) : 0;
+    };
+
+    const getPriceLabel = (seat: ISessionSeat) => {
+        const price = getPrice(seat);
+        return price > 0 ? `${price} грн` : '—';
+    };
+
+    const totalPrice = selectedSeats.reduce((sum, seat) => sum + getPrice(seat), 0);
+
+    const handleSeatClick = (seat: ISessionSeat) => {
+        if (seat.is_taken) return;
+        setSelectedSeats(prev =>
+            prev.find(s => s.id === seat.id)
+                ? prev.filter(s => s.id !== seat.id)
+                : [...prev, seat]
+        );
     };
 
     const handleBuy = async () => {
-        if (!selectedSeat || !user) return;
+        if (selectedSeats.length === 0 || !user) return;
         setError(null);
 
-        const result = await dispatch(ticketActions.createTicket({
-            user: user.id,
+        const payload = selectedSeats.map(seat => ({
             session: session.id,
-            seat: selectedSeat.id,
-        } as any));
+            seat: seat.id,
+        }));
+
+        const result = await dispatch(ticketActions.createTicket(payload as any));
 
         if (ticketActions.createTicket.fulfilled.match(result)) {
             setSuccess(true);
-            setSelectedSeat(null);
+            setSelectedSeats([]);
             dispatch(sessionActions.getSessionSeats(session.id));
         } else {
-            setError(result.payload as string || 'Помилка при купівлі квитка');
+            setError(result.payload as string || 'Помилка при купівлі квитків');
         }
     };
 
@@ -82,6 +98,10 @@ const SeatPickerComponent = ({ session }: IProps) => {
                     <span style={{ display: 'inline-block', width: 14, height: 14, background: '#ccc', marginRight: 4, verticalAlign: 'middle', borderRadius: 3 }} />
                     зайняте
                 </span>
+                <span>
+                    <span style={{ display: 'inline-block', width: 14, height: 14, background: '#ff6b6b', marginRight: 4, verticalAlign: 'middle', borderRadius: 3 }} />
+                    обрано
+                </span>
             </div>
 
             {/* Сітка */}
@@ -90,16 +110,14 @@ const SeatPickerComponent = ({ session }: IProps) => {
                     <div key={rowIdx} style={{ display: 'flex', alignItems: 'center', marginBottom: 4 }}>
                         <span style={{ width: 30, fontSize: 12 }}>R{rowIdx + 1}</span>
                         {row.map((seat, seatIdx) => {
-                            if (!seat) return (
-                                <div key={seatIdx} style={{ width: 30, height: 30, margin: 2 }} />
-                            );
-                            const isSelected = selectedSeat?.id === seat.id;
+                            if (!seat) return <div key={seatIdx} style={{ width: 30, height: 30, margin: 2 }} />;
+                            const isSelected = !!selectedSeats.find(s => s.id === seat.id);
                             const isTaken = seat.is_taken;
                             return (
                                 <div
                                     key={seatIdx}
-                                    onClick={() => !isTaken && setSelectedSeat(isSelected ? null : seat)}
-                                    title={`Ряд ${seat.row}, Місце ${seat.number} — ${seat.seat_type} — ${getPrice(seat)}`}
+                                    onClick={() => handleSeatClick(seat)}
+                                    title={`Ряд ${seat.row}, Місце ${seat.number} — ${seat.seat_type} — ${getPriceLabel(seat)}`}
                                     style={{
                                         width: 30, height: 30, margin: 2,
                                         borderRadius: 4,
@@ -119,20 +137,25 @@ const SeatPickerComponent = ({ session }: IProps) => {
                 ))}
             </div>
 
-            {/* Вибране місце */}
-            {selectedSeat && (
+            {/* Вибрані місця */}
+            {selectedSeats.length > 0 && (
                 <div style={{ marginTop: 10 }}>
-                    <p>Обрано: Ряд {selectedSeat.row}, Місце {selectedSeat.number} — {selectedSeat.seat_type} — {getPrice(selectedSeat)}</p>
-                    {!user && <p style={{ color: 'red' }}>Для купівлі квитка потрібно увійти в акаунт</p>}
-                    {user && <button onClick={handleBuy}>Купити квиток</button>}
+                    <h4>Обрані місця:</h4>
+                    {selectedSeats.map(seat => (
+                        <p key={seat.id}>
+                            Ряд {seat.row}, Місце {seat.number} — {seat.seat_type} — {getPriceLabel(seat)}
+                        </p>
+                    ))}
+                    <p><strong>Загальна сума: {totalPrice} грн</strong></p>
+                    {!user && <p style={{ color: 'red' }}>Для купівлі квитків потрібно увійти в акаунт</p>}
+                    {user && <button onClick={handleBuy}>Купити {selectedSeats.length} квиток(и)</button>}
                 </div>
             )}
 
-            {success && <p style={{ color: 'green' }}>✅ Квиток успішно придбано!</p>}
+            {success && <p style={{ color: 'green' }}>✅ Квитки успішно придбано!</p>}
             {error && <p style={{ color: 'red' }}>{error}</p>}
         </div>
     );
 };
-
 
 export default SeatPickerComponent;

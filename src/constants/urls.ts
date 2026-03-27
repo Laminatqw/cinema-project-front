@@ -40,6 +40,7 @@ export const urls = {
     tickets:{
         base:'/tickets',
         qRCode:(ticketId:string)=> urls.tickets.base + '/' + ticketId + '/qr',
+        byId:(id:number)=> urls.tickets.base + '/' + id,
     }
 
 }

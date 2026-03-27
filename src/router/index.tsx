@@ -15,7 +15,8 @@ import AdminLayout from "../layouts/AdminLayout/adminLayout";
 import GenreControlComponent from "../components/CreateComponent/GenreControlComponent/GenreControlComponent";
 import SessionControlComponent from "../components/CreateComponent/SessionControlComponent/SessionControlComponent";
 import SessionSeatsPage from "../pages/SessionSeatsPage/SessionSeatsPage";
-
+import TicketDetailComponent from "../components/TicketDetailComponent/TicketDetailComponent";
+import AccountPage from "../pages/AccountPage/AccountPage";
 
 export const router = createBrowserRouter([
     {
@@ -32,7 +33,8 @@ export const router = createBrowserRouter([
             {path:'login', element:<LoginPage/>},
             {path:'activate/:token', element:<ActivationPage/>},
             {path:'admin', element:<AdminPage/>},
-            {path:'account', element:<UserAccountComponent/>},
+            {path:'account', element:<AccountPage/>},
+            {path:'account/tickets/:id', element:<TicketDetailComponent/>},
 
             {
                 path: 'admin',

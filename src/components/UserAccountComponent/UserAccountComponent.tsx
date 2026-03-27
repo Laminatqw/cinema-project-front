@@ -10,7 +10,6 @@ const UserAccountComponent = () => {
             <h1>{user?.profile?.name} {user?.profile?.surname}</h1>
             <h2>{user?.profile?.age}</h2>
             <h2>{user?.email}</h2>
-
         </div>
     );
 };
