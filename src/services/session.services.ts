@@ -2,6 +2,7 @@ import {urls} from "../constants/urls";
 import {ISession} from "../models/ISession";
 import {axiosInstance} from "../helpers/axiosInstance";
 import {ISession_price} from "../models/ISession_price";
+import {ISessionSeat} from "../models/ISessionSeat";
 
 
 
@@ -31,6 +32,10 @@ import {ISession_price} from "../models/ISession_price";
         deleteSession: async (id: number): Promise<number> => {
             await axiosInstance.delete(urls.sessions.byId(id));
             return id;
+        },
+        getSessionSeats: async (sessionId: number): Promise<ISessionSeat[]> => {
+            let response = await axiosInstance.get(urls.sessions.seats(sessionId));
+            return response.data;
         },
 
         //prices

@@ -3,12 +3,19 @@ import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { sessionActions } from "../../../redux/slices/sessionSlice";
 import { movieActions } from "../../../redux/slices/movieSlice";
 import { hallActions } from "../../../redux/slices/hallSlice";
-import { ISession } from "../../../models/ISession";
+import { ISession, SessionStatus } from "../../../models/ISession";
 import { ISession_price } from "../../../models/ISession_price";
 import { SeatType } from "../../../models/IHallSeat";
 import SearchSelect from "../../SearchSelectComponent/SearchSelectComponent";
 
 const SEAT_TYPES: SeatType[] = ['regular', 'vip', 'disabled'];
+
+const STATUS_LABELS: Record<SessionStatus, string> = {
+    upcoming: '🔵 Майбутня',
+    active: '🟢 Активна',
+    finished: '🔴 Завершена',
+    unknown: '⚪ Невідомо',
+};
 
 const SessionControlComponent = () => {
     const dispatch = useAppDispatch();
@@ -16,19 +23,17 @@ const SessionControlComponent = () => {
     const { movies } = useAppSelector(state => state.movieStore);
     const { halls } = useAppSelector(state => state.hallStore);
 
-    // --- Session form ---
     const [selectedSession, setSelectedSession] = useState<ISession | null>(null);
     const [mode, setMode] = useState<'create' | 'edit'>('create');
     const [search, setSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState<SessionStatus | 'all'>('all');
     const [formData, setFormData] = useState<Partial<ISession>>({
         movie: undefined,
         hall: undefined,
         start_time: null,
         end_time: null,
-        is_active: true,
     });
 
-    // --- Price form ---
     const [showPrices, setShowPrices] = useState(false);
     const [priceFormData, setPriceFormData] = useState<Partial<ISession_price>>({
         seat_type: 'regular',
@@ -44,10 +49,11 @@ const SessionControlComponent = () => {
 
     const filteredSessions = sessions.filter(s => {
         const movie = movies.find(m => m.id === s.movie);
-        return movie?.name.toLowerCase().includes(search.toLowerCase()) ?? true;
+        const matchesSearch = movie?.name.toLowerCase().includes(search.toLowerCase()) ?? true;
+        const matchesStatus = statusFilter === 'all' || s.status === statusFilter;
+        return matchesSearch && matchesStatus;
     });
 
-    // --- Session handlers ---
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         setFormData(prev => ({
@@ -60,7 +66,7 @@ const SessionControlComponent = () => {
 
     const formatDateTime = (dt: string | null) => {
         if (!dt) return '';
-        return dt.slice(0, 16); // '2024-01-15T14:30:00Z' -> '2024-01-15T14:30'
+        return dt.slice(0, 16);
     };
 
     const handleSelect = (session: ISession) => {
@@ -74,6 +80,7 @@ const SessionControlComponent = () => {
         });
         setShowPrices(false);
     };
+
     const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
         if (mode === 'create') {
@@ -92,11 +99,10 @@ const SessionControlComponent = () => {
     const handleReset = () => {
         setSelectedSession(null);
         setMode('create');
-        setFormData({ movie: undefined, hall: undefined, start_time: null, end_time: null, is_active: true });
+        setFormData({ movie: undefined, hall: undefined, start_time: null, end_time: null });
         setShowPrices(false);
     };
 
-    // --- Price handlers ---
     const handleOpenPrices = async (session: ISession) => {
         setSelectedSession(session);
         setShowPrices(true);
@@ -111,10 +117,9 @@ const SessionControlComponent = () => {
         }));
     };
 
-    const handlePriceSubmit = async (e: React.FormEvent) => {
+    const handlePriceSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
         if (!selectedSession) return;
-
         if (editingPrice) {
             await dispatch(sessionActions.updatePrice({
                 sessionId: selectedSession.id,
@@ -153,7 +158,6 @@ const SessionControlComponent = () => {
             {/* Форма сесії */}
             <form onSubmit={handleSubmit}>
                 <h3>{mode === 'create' ? 'Додати сесію' : `Редагувати сесію #${selectedSession?.id}`}</h3>
-
                 <div>
                     <label>Фільм</label>
                     <SearchSelect
@@ -162,7 +166,7 @@ const SessionControlComponent = () => {
                         getLabel={m => m.name}
                         getId={m => m.id}
                         placeholder="Пошук фільму..."
-                        onSelect={id => setFormData(prev => ({...prev, movie: id}))}
+                        onSelect={id => setFormData(prev => ({ ...prev, movie: id }))}
                     />
                 </div>
                 <div>
@@ -173,21 +177,18 @@ const SessionControlComponent = () => {
                         getLabel={h => h.title}
                         getId={h => h.id}
                         placeholder="Пошук залу..."
-                        onSelect={id => setFormData(prev => ({...prev, hall: id}))}
+                        onSelect={id => setFormData(prev => ({ ...prev, hall: id }))}
                     />
                 </div>
                 <div>
                     <label>Початок</label>
-                    <input name="start_time" type="datetime-local" value={formData.start_time || ''}
-                           onChange={handleChange} required/>
+                    <input name="start_time" type="datetime-local" value={formData.start_time || ''} onChange={handleChange} required />
                 </div>
                 <div>
                     <label>Кінець</label>
-                    <input name="end_time" type="datetime-local" value={formData.end_time || ''} onChange={handleChange}
-                           required/>
+                    <input name="end_time" type="datetime-local" value={formData.end_time || ''} onChange={handleChange} required />
                 </div>
-
-                {error && <p style={{color: 'red'}}>{error}</p>}
+                {error && <p style={{ color: 'red' }}>{error}</p>}
                 <button type="submit">{mode === 'create' ? 'Створити' : 'Зберегти'}</button>
                 {mode === 'edit' && <button type="button" onClick={handleReset}>Скасувати</button>}
             </form>
@@ -196,22 +197,14 @@ const SessionControlComponent = () => {
             {showPrices && selectedSession && (
                 <div>
                     <h3>Ціни для сесії #{selectedSession.id} — {getMovieName(selectedSession.movie)}</h3>
-
                     <form onSubmit={handlePriceSubmit}>
-                    <select name="seat_type" value={priceFormData.seat_type} onChange={handlePriceChange}>
-                            {SEAT_TYPES.map(t => (
-                                <option key={t} value={t}>{t}</option>
-                            ))}
+                        <select name="seat_type" value={priceFormData.seat_type} onChange={handlePriceChange}>
+                            {SEAT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                         </select>
                         <input
-                            name="price"
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            placeholder="Ціна"
-                            value={priceFormData.price || ''}
-                            onChange={handlePriceChange}
-                            required
+                            name="price" type="number" min="0" step="0.01"
+                            placeholder="Ціна" value={priceFormData.price || ''}
+                            onChange={handlePriceChange} required
                         />
                         <button type="submit">{editingPrice ? 'Зберегти' : 'Додати ціну'}</button>
                         {editingPrice && (
@@ -220,14 +213,9 @@ const SessionControlComponent = () => {
                             </button>
                         )}
                     </form>
-
                     <table>
                         <thead>
-                        <tr>
-                            <th>Тип місця</th>
-                            <th>Ціна</th>
-                            <th>Дії</th>
-                        </tr>
+                        <tr><th>Тип місця</th><th>Ціна</th><th>Дії</th></tr>
                         </thead>
                         <tbody>
                         {prices.map(price => (
@@ -245,13 +233,20 @@ const SessionControlComponent = () => {
                 </div>
             )}
 
-            {/* Пошук */}
-            <input
-                placeholder="Пошук за назвою фільму..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                style={{ marginTop: 20 }}
-            />
+            {/* Пошук і фільтр */}
+            <div style={{ marginTop: 20, display: 'flex', gap: 10 }}>
+                <input
+                    placeholder="Пошук за назвою фільму..."
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                />
+                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value as SessionStatus | 'all')}>
+                    <option value="all">Всі</option>
+                    <option value="upcoming">Майбутні</option>
+                    <option value="active">Активні</option>
+                    <option value="finished">Завершені</option>
+                </select>
+            </div>
 
             {/* Список сесій */}
             <h3>Список сесій</h3>
@@ -263,7 +258,7 @@ const SessionControlComponent = () => {
                     <th>Зал</th>
                     <th>Початок</th>
                     <th>Кінець</th>
-                    <th>Активна</th>
+                    <th>Статус</th>
                     <th>Дії</th>
                 </tr>
                 </thead>
@@ -275,7 +270,7 @@ const SessionControlComponent = () => {
                         <td>{getHallName(session.hall)}</td>
                         <td>{session.start_time ? new Date(session.start_time).toLocaleString('uk-UA') : '—'}</td>
                         <td>{session.end_time ? new Date(session.end_time).toLocaleString('uk-UA') : '—'}</td>
-                        <td>{session.is_active ? '✅' : '❌'}</td>
+                        <td>{STATUS_LABELS[session.status] ?? '⚪'}</td>
                         <td>
                             <button onClick={() => handleSelect(session)}>Редагувати</button>
                             <button onClick={() => handleOpenPrices(session)}>Ціни</button>

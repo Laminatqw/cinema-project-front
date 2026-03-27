@@ -1,3 +1,5 @@
+export type SessionStatus = 'upcoming' | 'active' | 'finished' | 'unknown'
+
 export interface ISession{
     id: number
     movie: number
@@ -5,4 +7,5 @@ export interface ISession{
     start_time:string|null
     end_time:string|null
     is_active:boolean
+    status: SessionStatus
 }

@@ -34,10 +34,12 @@ export const urls = {
         byId:(id:number)=> urls.sessions.base + '/' + id,
         price:(sessionID:number) => urls.sessions.base + '/' +sessionID + '/prices',
         priceById:(sessionID:number, id:number) => urls.sessions.base + '/' + sessionID + '/prices/' + id,
+        seats:(sessionID:number) => urls.sessions.byId(sessionID) + '/seats',
+
     },
     tickets:{
         base:'/tickets',
-        qRCode:(ticketId:string)=> urls.tickets.base + '/' + ticketId + '/qr'
+        qRCode:(ticketId:string)=> urls.tickets.base + '/' + ticketId + '/qr',
     }
 
 }
