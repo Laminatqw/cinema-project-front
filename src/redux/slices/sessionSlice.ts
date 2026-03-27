@@ -97,6 +97,18 @@ let getSessionSeats = createAsyncThunk<ISessionSeat[], number>(
     }
 )
 
+let getSessionsByMovie = createAsyncThunk<ISession[], number>(
+    'sessionSlice/getSessionsByMovie', async (movieId, thunkAPI) => {
+        try {
+            let sessions = await sessionServices.getAllByMovie(movieId);
+            return thunkAPI.fulfillWithValue(sessions);
+        } catch (e) {
+            let error = e as AxiosError<{detail: string}>;
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch sessions');
+        }
+    }
+)
+
 //price
 
 let getPrices = createAsyncThunk<ISession_price[], number>(
@@ -177,6 +189,9 @@ export const sessionSlice = createSlice({
                 state.session = null;
                 state.sessions = state.sessions.filter(s => s.id !== action.payload);
             })
+            .addCase(getSessionsByMovie.fulfilled, (state, action) => {
+                state.sessions = action.payload;
+            })
             .addCase(getPrices.fulfilled, (state, action) => {
                 state.prices = action.payload;
             })
@@ -196,7 +211,7 @@ export const sessionSlice = createSlice({
 
         builder
             .addMatcher(
-                isPending(getAllSessions, getSessionById, createSession, updateSession, deleteSession, getSessionSeats,
+                isPending(getAllSessions, getSessionById, createSession, updateSession, deleteSession, getSessionSeats, getSessionsByMovie,
                     getPrices, createPrice, updatePrice, deletePrice),
                 (state) => {
                     state.isLoaded = true;
@@ -204,14 +219,14 @@ export const sessionSlice = createSlice({
                 }
             )
             .addMatcher(
-                isFulfilled(getAllSessions, getSessionById, createSession, updateSession, deleteSession, getSessionSeats,
+                isFulfilled(getAllSessions, getSessionById, createSession, updateSession, deleteSession, getSessionSeats,getSessionsByMovie,
                     getPrices, createPrice, updatePrice, deletePrice),
                 (state) => {
                     state.isLoaded = false;
                 }
             )
             .addMatcher(
-                isRejected(getAllSessions, getSessionById, createSession, updateSession, deleteSession, getSessionSeats,
+                isRejected(getAllSessions, getSessionById, createSession, updateSession, deleteSession, getSessionSeats,getSessionsByMovie,
                     getPrices, createPrice, updatePrice, deletePrice),
                 (state, action) => {
                     state.isLoaded = false;
@@ -223,7 +238,7 @@ export const sessionSlice = createSlice({
 
 export const sessionActions = {
     ...sessionSlice.actions,
-    getAllSessions, getSessionById, createSession, updateSession, deleteSession, getSessionSeats,
+    getAllSessions, getSessionById, createSession, updateSession, deleteSession, getSessionSeats, getSessionsByMovie,
     getPrices, createPrice, updatePrice, deletePrice
 }
 

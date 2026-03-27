@@ -37,6 +37,12 @@ import {ISessionSeat} from "../models/ISessionSeat";
             let response = await axiosInstance.get(urls.sessions.seats(sessionId));
             return response.data;
         },
+        getAllByMovie: async (movieId: number): Promise<ISession[]> => {
+            let response = await axiosInstance.get<{data: ISession[]}>(urls.sessions.base, {
+                params: { movie: movieId }
+            });
+            return response.data.data;
+        },
 
         //prices
 

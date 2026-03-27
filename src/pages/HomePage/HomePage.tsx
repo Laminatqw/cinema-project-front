@@ -3,6 +3,7 @@ import {useEffect} from "react";
 import {userActions} from "../../redux/slices/userSlice";
 import {movieActions} from "../../redux/slices/movieSlice";
 import {Link} from "react-router-dom";
+import "./styles.css";
 
 const HomePage = () => {
     const dispatch = useAppDispatch();
@@ -20,9 +21,9 @@ const HomePage = () => {
             {movies.length === 0 ? (
                 <p>Немає активних фільмів</p>
             ) : (
-                <div>
+                <div className={'movies'}>
                     {movies.map(movie => (
-                        <div key={movie.id}>
+                        <div key={movie.id} className={'movie2'}>
                             {movie.picture && (
                                 <img src={movie.picture} alt={movie.name} style={{ width: 200 }} />
                             )}

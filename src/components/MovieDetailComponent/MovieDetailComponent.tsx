@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import {useAppDispatch, useAppSelector} from "../../redux/store";
 import {useParams} from "react-router-dom";
 import {movieActions} from "../../redux/slices/movieSlice";
+import MovieSessionsComponent from "../MovieSessionsComponent/MovieSessionComponent";
 
 const MovieDetailComponent = () => {
 
@@ -18,7 +19,6 @@ const MovieDetailComponent = () => {
     }, [id]);
 
     if (!movie) return <p>Завантаження...</p>;
-    //TODO:make correct genres display in MovieDetailComponent
     return (
         <div>
             {movie.picture && <img src={movie.picture} alt={movie.name}/>}
@@ -35,6 +35,7 @@ const MovieDetailComponent = () => {
                     Дивитись трейлер
                 </a>
             )}
+            <MovieSessionsComponent movieId={movie.id} />
         </div>
     );
 };

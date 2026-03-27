@@ -1,0 +1,8 @@
+.movies{
+    display: flex;
+    flex-direction: row;
+    margin: 20px;
+}
+.movie2{
+    margin: 20px;
+}

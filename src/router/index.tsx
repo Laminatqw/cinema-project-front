@@ -14,6 +14,7 @@ import MovieControlComponent from "../components/CreateComponent/MovieControlCom
 import AdminLayout from "../layouts/AdminLayout/adminLayout";
 import GenreControlComponent from "../components/CreateComponent/GenreControlComponent/GenreControlComponent";
 import SessionControlComponent from "../components/CreateComponent/SessionControlComponent/SessionControlComponent";
+import SessionSeatsPage from "../pages/SessionSeatsPage/SessionSeatsPage";
 
 
 export const router = createBrowserRouter([
@@ -25,6 +26,7 @@ export const router = createBrowserRouter([
             {index:true, element:<HomePage/>},
             {path:'movies', element:<MoviesPage/>},
             {path:'movies/:id', element:<MovieDetailPage/>},
+            {path:'sessions/:sessionId/seats', element:<SessionSeatsPage/>},
             {path:'filter', element:<MoviesFiltPage/>},
             {path:'register', element:<RegisterPage/>},
             {path:'login', element:<LoginPage/>},
