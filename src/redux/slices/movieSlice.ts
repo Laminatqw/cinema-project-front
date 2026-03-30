@@ -5,7 +5,7 @@ import {movieServices} from "../../services/movie.services";
 import {AxiosError} from "axios";
 import {PaginatedModel} from "../../models/PaginatedModel";
 import {PaginatedPageModel} from "../../models/PaginatedPageModel";
-import {IMovieFilter} from "../../models/IMovieFilter";
+import {IMovieFilter} from "../../models/filters/IMovieFilter";
 
 
 type MovieSliceType = {
@@ -35,6 +35,7 @@ const initialState: MovieSliceType = {
     next:null,
     filters:{
         page:1,
+        size:10,
     }
 
 }
@@ -43,6 +44,7 @@ const initialState: MovieSliceType = {
 let getAllMovies = createAsyncThunk<PaginatedModel<IMovie>, IMovieFilter|undefined>(
     'movieSlice/getAllMovies', async (filters , thunkAPI)=>{
         try {
+
             let movies = await movieServices.getAll(filters);
             return thunkAPI.fulfillWithValue(movies)
         } catch (e) {
@@ -182,7 +184,16 @@ export const movieSlice = createSlice({
         setPage(state, action){
             state.filters.page = action.payload
         },
-
+        setPageSize(state, action) {
+            state.filters.size = action.payload;
+            state.filters.page = 1;
+        },
+        setFilters: (state, action) => {
+            state.filters = {
+                ...state.filters,
+                ...action.payload
+            }
+        },
         setNameFilter(state, action){
             state.filters.name = action.payload
             state.filters.page = 1

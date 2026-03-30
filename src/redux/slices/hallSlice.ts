@@ -3,6 +3,9 @@ import {IHallSeat} from "../../models/IHallSeat";
 import {createAsyncThunk, createSlice, isFulfilled, isPending, isRejected, PayloadAction} from "@reduxjs/toolkit";
 import {hallServices} from "../../services/hall.services";
 import {AxiosError} from "axios";
+import {PageSizeModel} from "../../models/filters/PageSizeModel";
+import {PaginatedPageModel} from "../../models/PaginatedPageModel";
+import {PaginatedModel} from "../../models/PaginatedModel";
 
 
 type HallSliceType = {
@@ -12,6 +15,11 @@ type HallSliceType = {
     error:string,
     hall:IHall|null,
     seat:IHallSeat|null,
+    total_pages:number|null,
+    total_items:number|null,
+    prev:PaginatedPageModel |null,
+    next:PaginatedPageModel |null,
+    filters:PageSizeModel
 }
 
 const initialState:HallSliceType = {
@@ -21,13 +29,21 @@ const initialState:HallSliceType = {
     error:'',
     hall:null,
     seat:null,
+    total_pages:null,
+    total_items:null,
+    prev:null,
+    next:null,
+    filters:{
+        page:1,
+        size:10
+    }
 }
 
 
-let getAllHalls = createAsyncThunk<IHall[]>(
-    'hallSlice/getAllHalls', async (_, thunkAPI)=>{
+let getAllHalls = createAsyncThunk<PaginatedModel<IHall>, PageSizeModel|undefined>(
+    'hallSlice/getAllHalls', async (filters, thunkAPI)=>{
         try {
-            let halls = await hallServices.getAll();
+            let halls = await hallServices.getAll(filters);
             return thunkAPI.fulfillWithValue(halls)
         } catch (e) {
             let error = e as AxiosError<{detail:string}>;
@@ -151,13 +167,23 @@ export const hallSlice = createSlice({
         clearError: (state) => { state.error = ''; },
         clearHall: (state) => { state.hall = null; },
         clearSeat: (state) => { state.seat = null; },
+        setPage(state, action){
+            state.filters.page = action.payload
+        },
+        setPageSize(state, action) {
+            state.filters.size = action.payload;
+            state.filters.page = 1;
+        },
     },
     extraReducers: (builder) => {
 
         // ---- Halls ----
         builder
-            .addCase(getAllHalls.fulfilled, (state, action: PayloadAction<IHall[]>) => {
-                state.halls = action.payload;
+            .addCase(getAllHalls.fulfilled, (state, action) => {
+                state.halls = action.payload?.data || []
+                state.total_pages = action.payload.total_pages
+                state.total_items = action.payload.total_items
+                state.isLoaded = true
             })
             .addCase(getHallById.fulfilled, (state, action: PayloadAction<IHall>) => {
                 state.hall = action.payload;

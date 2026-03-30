@@ -4,6 +4,8 @@ import { hallActions } from "../../../redux/slices/hallSlice";
 import { IHall } from "../../../models/IHall";
 import { IHallSeat, SeatType } from "../../../models/IHallSeat";
 import "./hallStyle.css"
+import {sessionActions} from "../../../redux/slices/sessionSlice";
+import PaginationComponent from "../../PaginationComponent/PaginationComponent";
 
 const HALL_TYPES = ['standard', 'imax', '3d'];
 
@@ -15,7 +17,7 @@ const SEAT_COLORS: Record<SeatType, string> = {
 
 const HallControlComponent = () => {
     const dispatch = useAppDispatch();
-    const { halls, seats, error } = useAppSelector(state => state.hallStore);
+    const { halls, seats, error, filters, total_pages } = useAppSelector(state => state.hallStore);
 
     // --- Hall form ---
     const [hallFormData, setHallFormData] = useState<Partial<IHall>>({
@@ -33,8 +35,8 @@ const HallControlComponent = () => {
     const [seatsCreated, setSeatsCreated] = useState(false);
 
     useEffect(() => {
-        dispatch(hallActions.getAllHalls());
-    }, []);
+        dispatch(hallActions.getAllHalls(filters));
+    }, [filters.page, filters.size]);
 
     // генерація сітки
     const generateGrid = () => {
@@ -210,6 +212,14 @@ const HallControlComponent = () => {
         h.title.toLowerCase().includes(search.toLowerCase())
     );
 
+    const handlePageChange = (page: number) => {
+        dispatch(hallActions.setPage(page));
+    };
+    const handlePageSizeChange = (size: number) => {
+        dispatch(hallActions.setPageSize(size));
+    };
+
+
     return (
         <div>
             <h2>Управління залами</h2>
@@ -344,6 +354,11 @@ const HallControlComponent = () => {
                 ))}
                 </tbody>
             </table>
+            <PaginationComponent currentPage={filters.page || 1}
+                                 totalPages={total_pages || 1}
+                                 onPageChange={handlePageChange}
+                                 pageSize={filters.size ||10}
+                                 onPageSizeChange={handlePageSizeChange}/>
         </div>
     );
 };

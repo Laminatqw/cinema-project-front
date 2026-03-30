@@ -45,7 +45,6 @@ const TicketDetailComponent = () => {
         <p>Ряд: {ticketDetail.row}, Місце: {ticketDetail.number}</p>
         <p>Тип місця: {ticketDetail.seat_type}</p>
         <p>Статус: {STATUS_LABELS[ticketDetail.status] ?? ticketDetail.status}</p>
-        <p>UUID: {ticketDetail.uuid}</p>
 
         {qrUrl && (
             <div>

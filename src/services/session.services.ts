@@ -3,14 +3,17 @@ import {ISession} from "../models/ISession";
 import {axiosInstance} from "../helpers/axiosInstance";
 import {ISession_price} from "../models/ISession_price";
 import {ISessionSeat} from "../models/ISessionSeat";
+import {PageSizeModel} from "../models/filters/PageSizeModel";
+import {PaginatedModel} from "../models/PaginatedModel";
 
 
 
     export const sessionServices = {
-        getAll: async (): Promise<ISession[]> => {
-            let response = await axiosInstance.get<{data:ISession[]}>(urls.sessions.base);
-            console.log(response.data);
-            return response.data.data;
+        getAll: async (filters?:PageSizeModel): Promise<PaginatedModel<ISession>> => {
+            let response = await axiosInstance.get(urls.sessions.base,{
+                params:filters,
+            });
+            return response.data;
         },
         getById: async (id: number): Promise<ISession> => {
             let response = await axiosInstance.get<ISession>(urls.sessions.byId(id));
@@ -37,11 +40,13 @@ import {ISessionSeat} from "../models/ISessionSeat";
             let response = await axiosInstance.get(urls.sessions.seats(sessionId));
             return response.data;
         },
-        getAllByMovie: async (movieId: number): Promise<ISession[]> => {
-            let response = await axiosInstance.get<{data: ISession[]}>(urls.sessions.base, {
-                params: { movie: movieId }
+        getAllByMovie: async (movieId:number, filters?:PageSizeModel): Promise<PaginatedModel<ISession>> => {
+            let response = await axiosInstance.get(urls.sessions.base, {
+                params: {movie:movieId,
+                        page: filters?.page,
+                        size:filters?.size}
             });
-            return response.data.data;
+            return response.data;
         },
 
         //prices

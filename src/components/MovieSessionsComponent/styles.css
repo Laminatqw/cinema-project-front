@@ -1,0 +1,6 @@
+.films{
+    display: flex;
+    flex-direction: row;
+    overflow-wrap: normal;
+    border: 10px;
+}

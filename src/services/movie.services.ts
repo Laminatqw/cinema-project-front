@@ -3,16 +3,29 @@ import {baseUrl, urls} from "../constants/urls";
 import {IGenre} from "../models/IGenre";
 import axios from "axios";
 import {PaginatedModel} from "../models/PaginatedModel";
-import {IMovieFilter} from "../models/IMovieFilter";
+import {IMovieFilter} from "../models/filters/IMovieFilter";
 import {data} from "react-router-dom";
 import {axiosInstance} from "../helpers/axiosInstance";
 
 
 export const movieServices = {
 
-    getAll: async (filters?:IMovieFilter):Promise<PaginatedModel<IMovie>> =>{
-      const response = await axiosInstance.get(urls.movies.base,{params:filters})
-      return response.data
+    getAll: async (filters?: IMovieFilter): Promise<PaginatedModel<IMovie>> => {
+        const response = await axiosInstance.get(urls.movies.base, {
+            params: filters,
+            paramsSerializer: params => {
+                const searchParams = new URLSearchParams();
+                Object.entries(params).forEach(([key, value]) => {
+                    if (Array.isArray(value)) {
+                        value.forEach(v => searchParams.append(key, v));
+                    } else if (value !== undefined) {
+                        searchParams.append(key, value);
+                    }
+                });
+                return searchParams.toString();
+            }
+        });
+        return response.data;
     },
     getById: async (id: number): Promise<IMovie> => {
         let response = await axiosInstance.get<IMovie>(urls.movies.byId(id));
@@ -44,10 +57,9 @@ export const movieServices = {
         return data
     },
     getAllGenres: async (): Promise<IGenre[]> => {
-        let response = await axiosInstance.get<{data:IGenre[]}>(urls.movies.genres());
+        let response = await axiosInstance.get<IGenre[]>(urls.movies.genres());
         console.log(response.data)
-        return response.data.data;
-
+        return response.data;
     },
     getGenreById: async (id: number): Promise<IGenre> => {
         let response = await axiosInstance.get<IGenre>(urls.movies.genresById(id));

@@ -7,6 +7,7 @@ import { ISession, SessionStatus } from "../../../models/ISession";
 import { ISession_price } from "../../../models/ISession_price";
 import { SeatType } from "../../../models/IHallSeat";
 import SearchSelect from "../../SearchSelectComponent/SearchSelectComponent";
+import PaginationComponent from "../../PaginationComponent/PaginationComponent";
 
 const SEAT_TYPES: SeatType[] = ['regular', 'vip', 'disabled'];
 
@@ -19,7 +20,7 @@ const STATUS_LABELS: Record<SessionStatus, string> = {
 
 const SessionControlComponent = () => {
     const dispatch = useAppDispatch();
-    const { sessions, prices, error } = useAppSelector(state => state.sessionStore);
+    const { sessions, prices, error, total_pages, filters } = useAppSelector(state => state.sessionStore);
     const { movies } = useAppSelector(state => state.movieStore);
     const { halls } = useAppSelector(state => state.hallStore);
 
@@ -42,10 +43,10 @@ const SessionControlComponent = () => {
     const [editingPrice, setEditingPrice] = useState<ISession_price | null>(null);
 
     useEffect(() => {
-        dispatch(sessionActions.getAllSessions());
+        dispatch(sessionActions.getAllSessions(filters));
         dispatch(movieActions.getAllMovies());
         dispatch(hallActions.getAllHalls());
-    }, []);
+    }, [filters.size,filters.page]);
 
     const filteredSessions = sessions.filter(s => {
         const movie = movies.find(m => m.id === s.movie);
@@ -150,6 +151,15 @@ const SessionControlComponent = () => {
 
     const getMovieName = (id: number) => movies.find(m => m.id === id)?.name ?? id;
     const getHallName = (id: number) => halls.find(h => h.id === id)?.title ?? id;
+
+    const handlePageChange = (page: number) => {
+        dispatch(sessionActions.setPage(page));
+    };
+    const handlePageSizeChange = (size: number) => {
+        dispatch(sessionActions.setPageSize(size));
+    };
+
+
 
     return (
         <div>
@@ -279,7 +289,13 @@ const SessionControlComponent = () => {
                     </tr>
                 ))}
                 </tbody>
+
             </table>
+            <PaginationComponent currentPage={filters.page || 1}
+                                 totalPages={total_pages || 1}
+                                 onPageChange={handlePageChange}
+                                 pageSize={filters.size ||10}
+                                 onPageSizeChange={handlePageSizeChange}/>
         </div>
     );
 };

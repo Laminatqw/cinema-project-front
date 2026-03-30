@@ -1,5 +1,6 @@
 export interface IMovieFilter {
     page?: number
+    size?:number
     name?: string
     genre?: number[]
     rating__gte?: number
@@ -10,4 +11,5 @@ export interface IMovieFilter {
     year__gte?: number
     year__lte?: number
     is_now_showing?: 'yes' | 'no'
+
 }

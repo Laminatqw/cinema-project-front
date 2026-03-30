@@ -4,6 +4,12 @@ import {sessionServices} from "../../services/session.services";
 import {AxiosError} from "axios";
 import {ISession_price} from "../../models/ISession_price";
 import {ISessionSeat} from "../../models/ISessionSeat";
+import {PaginatedPageModel} from "../../models/PaginatedPageModel";
+import {PageSizeModel} from "../../models/filters/PageSizeModel";
+import {PaginatedModel} from "../../models/PaginatedModel";
+
+
+
 
 
 type SessionSliceType = {
@@ -12,7 +18,12 @@ type SessionSliceType = {
     session: ISession | null,
     prices: ISession_price[],
     sessionSeats: ISessionSeat[],
-    error: string
+    error: string,
+    total_pages:number|null,
+    total_items:number|null,
+    prev:PaginatedPageModel |null,
+    next:PaginatedPageModel |null,
+    filters:PageSizeModel
 }
 
 const initialState: SessionSliceType = {
@@ -21,14 +32,28 @@ const initialState: SessionSliceType = {
     session: null,
     prices: [],
     sessionSeats:[],
-    error: ''
+    error: '',
+    total_pages:null,
+    total_items:null,
+    prev:null,
+    next:null,
+    filters:{
+        page:1,
+        size:10
+    }
 }
 
+type SessionQuery = {
+    movieId: number;
+    page: number;
+    size: number;
+};
 
-let getAllSessions = createAsyncThunk<ISession[]>(
-    'sessionSlice/getAllSessions', async (_, thunkAPI) =>{
+
+let getAllSessions = createAsyncThunk<PaginatedModel<ISession>, PageSizeModel|undefined>(
+    'sessionSlice/getAllSessions', async (filters, thunkAPI) =>{
         try {
-            let sessions = await sessionServices.getAll();
+            let sessions = await sessionServices.getAll(filters);
             return thunkAPI.fulfillWithValue(sessions)
         } catch (e){
             let error = e as AxiosError<{detail:string}>;
@@ -97,17 +122,19 @@ let getSessionSeats = createAsyncThunk<ISessionSeat[], number>(
     }
 )
 
-let getSessionsByMovie = createAsyncThunk<ISession[], number>(
-    'sessionSlice/getSessionsByMovie', async (movieId, thunkAPI) => {
+let getSessionsByMovie = createAsyncThunk<PaginatedModel<ISession>, SessionQuery >(
+    'sessionSlice/getSessionsByMovie', async ({movieId, page, size}, thunkAPI) => {
         try {
-            let sessions = await sessionServices.getAllByMovie(movieId);
+            const sessions = await sessionServices.getAllByMovie(movieId, { page, size });
             return thunkAPI.fulfillWithValue(sessions);
         } catch (e) {
-            let error = e as AxiosError<{detail: string}>;
-            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch sessions');
+            const error = e as AxiosError<{ detail: string }>;
+            return thunkAPI.rejectWithValue(
+                error?.response?.data.detail || 'Failed to fetch sessions'
+            );
         }
     }
-)
+);
 
 //price
 
@@ -167,12 +194,22 @@ export const sessionSlice = createSlice({
         clearError: (state) => { state.error = ''; },
         clearSession: (state) => { state.session = null; },
         clearPrices: (state) => { state.prices = []; },
+        setPage(state, action){
+            state.filters.page = action.payload
+        },
+        setPageSize(state, action) {
+            state.filters.size = action.payload;
+            state.filters.page = 1;
+        },
     },
     extraReducers: (builder) => {
 
         builder
             .addCase(getAllSessions.fulfilled, (state, action) => {
-                state.sessions = action.payload;
+                state.sessions = action.payload?.data || []
+                state.total_pages = action.payload.total_pages
+                state.total_items = action.payload.total_items
+                state.isLoaded = true
             })
             .addCase(getSessionById.fulfilled, (state, action) => {
                 state.session = action.payload;
@@ -190,7 +227,10 @@ export const sessionSlice = createSlice({
                 state.sessions = state.sessions.filter(s => s.id !== action.payload);
             })
             .addCase(getSessionsByMovie.fulfilled, (state, action) => {
-                state.sessions = action.payload;
+                state.sessions = action.payload?.data || []
+                state.total_pages = action.payload.total_pages
+                state.total_items = action.payload.total_items
+                state.isLoaded = true
             })
             .addCase(getPrices.fulfilled, (state, action) => {
                 state.prices = action.payload;

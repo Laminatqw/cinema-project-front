@@ -20,10 +20,10 @@ const UserHeaderComponent = () => {
                         onMouseEnter={() => setDropdownOpen(true)}
                         onMouseLeave={() => setDropdownOpen(false)}
                     >
-                        <span style={{cursor: 'pointer'}}>{user.profile?.name || user.email}</span>
+                        <span style={{cursor: 'pointer', }}>{user.profile?.name || user.email}</span>
 
                         {dropdownOpen && (
-                            <div style={{position: 'absolute', top: '100%', right: 0}}>
+                            <div style={{position: 'absolute', top: '100%', right: 0, background:'white'}}>
                                 <Link to={'/account'}>Account</Link>
                                 <button onClick={
                                     () =>

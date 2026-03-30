@@ -3,10 +3,12 @@ import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import { IMovie } from "../../../models/IMovie";
 import { movieActions } from "../../../redux/slices/movieSlice";
 import { IGenre } from "../../../models/IGenre";
+import PaginationComponent from "../../PaginationComponent/PaginationComponent";
+import './styles.css'
 
 const MovieControlComponent = () => {
     const dispatch = useAppDispatch();
-    const { movies, genres, isLoaded, error } = useAppSelector(state => state.movieStore);
+    const { movies, genres, isLoaded, error, filters, total_pages } = useAppSelector(state => state.movieStore);
 
     const [selectedMovie, setSelectedMovie] = useState<IMovie | null>(null);
     const [formData, setFormData] = useState<Partial<IMovie>>({
@@ -25,9 +27,9 @@ const MovieControlComponent = () => {
     const [selectedGenres, setSelectedGenres] = useState<IGenre[]>([]);
 
     useEffect(() => {
-        dispatch(movieActions.getAllMovies());
+        dispatch(movieActions.getAllMovies(filters));
         dispatch(movieActions.getAllGenres());
-    }, []);
+    }, [filters.size, filters.page]);
 
     const filteredMovies = movies.filter(m =>
         m.name.toLowerCase().includes(search.toLowerCase())
@@ -56,6 +58,7 @@ const MovieControlComponent = () => {
             is_now_showing: movie.is_now_showing,
             release_date: movie.release_date,
             end_date: movie.end_date,
+
         });
     };
 
@@ -66,6 +69,13 @@ const MovieControlComponent = () => {
                 : [...prev, genre]
         );
     };
+    const handlePageChange = (page: number) => {
+        dispatch(movieActions.setPage(page));
+    };
+    const handlePageSizeChange = (size: number) => {
+        dispatch(movieActions.setPageSize(size));
+    };
+
 
     const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
@@ -183,7 +193,7 @@ const MovieControlComponent = () => {
 
             <h3>Список фільмів</h3>
             {!isLoaded ? <p>Завантаження...</p> : (
-                <table>
+                <table className={'movieControlTable'}>
                     <thead>
                     <tr>
                         <th>ID</th>
@@ -211,7 +221,7 @@ const MovieControlComponent = () => {
                             <td>{movie.year}</td>
                             <td>{movie.length} хв</td>
                             <td>{movie.rating}</td>
-                            <td>{movie.genres_detail.map(g => g.genre_name).join(', ')}</td>
+                            <td className={'genres'}>{movie.genres_detail.map(g => g.genre_name).join(', ')}</td>
                             <td>{movie.is_now_showing ? '✅' : '❌'}</td>
                             <td>
                                 <button onClick={() => handleSelect(movie)}>Редагувати</button>
@@ -222,6 +232,11 @@ const MovieControlComponent = () => {
                     </tbody>
                 </table>
             )}
+            <PaginationComponent currentPage={filters.page || 1}
+                                 totalPages={total_pages || 1}
+                                 onPageChange={handlePageChange}
+                                 pageSize={filters.size ||10}
+                                onPageSizeChange={handlePageSizeChange}/>
         </div>
     );
 };

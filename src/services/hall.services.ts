@@ -3,13 +3,18 @@ import {baseUrl, urls} from "../constants/urls";
 import {IHall} from "../models/IHall";
 import {IHallSeat} from "../models/IHallSeat";
 import {axiosInstance} from "../helpers/axiosInstance";
+import {PageSizeModel} from "../models/filters/PageSizeModel";
+import {PaginatedModel} from "../models/PaginatedModel";
 
 
 
 export const hallServices = {
-    getAll: async (): Promise<IHall[]> => {
-        let response = await axiosInstance.get<{data:IHall[]}>(urls.halls.base);
-        return response.data.data;
+    getAll: async (filters?:PageSizeModel): Promise<PaginatedModel<IHall>> => {
+        let response = await axiosInstance.get(urls.halls.base,
+            {
+                params:filters,
+        });
+        return response.data;
     },
     getById: async (id: number): Promise<IHall> => {
         let response = await axiosInstance.get<IHall>(urls.halls.byId(id));

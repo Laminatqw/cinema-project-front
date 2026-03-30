@@ -1,0 +1,10 @@
+.genres{
+    overflow-wrap: normal;
+    max-width: 200px;
+}
+.movieControlTable{
+    border: 3px solid black;
+}
+.movieControlTable td{
+    border: 2px solid black;
+}
