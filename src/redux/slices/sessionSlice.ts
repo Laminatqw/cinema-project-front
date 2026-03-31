@@ -18,6 +18,7 @@ type SessionSliceType = {
     session: ISession | null,
     prices: ISession_price[],
     sessionSeats: ISessionSeat[],
+    isActive: boolean
     error: string,
     total_pages:number|null,
     total_items:number|null,
@@ -32,6 +33,7 @@ const initialState: SessionSliceType = {
     session: null,
     prices: [],
     sessionSeats:[],
+    isActive:false,
     error: '',
     total_pages:null,
     total_items:null,

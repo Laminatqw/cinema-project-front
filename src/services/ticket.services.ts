@@ -20,8 +20,13 @@ export const ticketServices = {
         }
     },
     getTicketById: async (id: number): Promise<ITicketDetail> => {
-        let response = await axiosInstance.get<ITicketDetail>(urls.tickets.byId(id));
-        return response.data;
+        try{
+            let response = await axiosInstance.get<ITicketDetail>(urls.tickets.byId(id));
+            return response.data;
+        } catch (e:any){
+            console.log(e.response.data);
+            throw e;
+        }
     },
     getQrCode: async (ticketToken: string): Promise<Blob> => {
         const { data } = await axiosInstance.get(urls.tickets.qRCode(ticketToken), { responseType: 'blob' });

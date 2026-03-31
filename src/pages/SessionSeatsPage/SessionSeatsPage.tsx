@@ -7,13 +7,20 @@ import { sessionActions } from "../../redux/slices/sessionSlice";
 const SessionSeatsPage = () => {
     const { sessionId } = useParams();
     const dispatch = useAppDispatch();
-    const { session } = useAppSelector(state => state.sessionStore);
+    const { session, error, isActive  } = useAppSelector(state => state.sessionStore);
 
     useEffect(() => {
         if (sessionId) {
             dispatch(sessionActions.getSessionById(+sessionId));
         }
     }, [dispatch, sessionId]);
+
+    if (error) return (
+        <div>
+            <h2>Помилка</h2>
+            <p>Сесії не знайдено, або у вас немає доступу до неї</p>
+        </div>
+    );
 
     if (!session) return <p>Завантаження сеансу...</p>;
 

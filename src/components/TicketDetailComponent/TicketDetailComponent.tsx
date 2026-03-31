@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { ticketActions } from "../../redux/slices/tickerSlice";
@@ -14,7 +14,7 @@ const STATUS_LABELS: Record<string, string> = {
 const TicketDetailComponent = () => {
     const { id } = useParams<{ id: string }>();
     const dispatch = useAppDispatch();
-    const { ticketDetail } = useAppSelector(state => state.ticketStore);
+    const { ticketDetail, error } = useAppSelector(state => state.ticketStore);
     const [qrUrl, setQrUrl] = useState<string | null>(null);
 
     useEffect(() => {
@@ -34,10 +34,17 @@ const TicketDetailComponent = () => {
             if (qrUrl) URL.revokeObjectURL(qrUrl);
         };
     }, [ticketDetail?.uuid]);
+    if (error) return (
+        <div>
+            <h2>Помилка</h2>
+            <p>Квиток не знайдено або у вас немає доступу до нього.</p>
+        </div>
+    );
 
     if (!ticketDetail) return <p>Завантаження...</p>;
     return (
         <div>
+
         <h2>Квиток #{ticketDetail.id}</h2>
         <p>Фільм: {ticketDetail.movie}</p>
         <p>Початок: {new Date(ticketDetail.start_time).toLocaleString('uk-UA')}</p>

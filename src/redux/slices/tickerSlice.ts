@@ -29,7 +29,7 @@ let getTicket = createAsyncThunk<ITickets[]>(
             return thunkAPI.fulfillWithValue(ticket)
         } catch (e){
             let error = e as AxiosError<{detail:string}>;
-            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch halls')
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch ticket')
         }
     }
 )

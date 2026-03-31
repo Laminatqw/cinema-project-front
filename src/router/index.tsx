@@ -17,6 +17,7 @@ import SessionControlComponent from "../components/CreateComponent/SessionContro
 import SessionSeatsPage from "../pages/SessionSeatsPage/SessionSeatsPage";
 import TicketDetailComponent from "../components/TicketDetailComponent/TicketDetailComponent";
 import AccountPage from "../pages/AccountPage/AccountPage";
+import ProtectedRouteComponent from "../components/ProtectedRouteComponent/ProtectedRouteComponent";
 
 export const router = createBrowserRouter([
     {
@@ -32,13 +33,12 @@ export const router = createBrowserRouter([
             {path:'register', element:<RegisterPage/>},
             {path:'login', element:<LoginPage/>},
             {path:'activate/:token', element:<ActivationPage/>},
-            {path:'admin', element:<AdminPage/>},
-            {path:'account', element:<AccountPage/>},
+            {path:'account', element:<ProtectedRouteComponent requireAuth><AccountPage/></ProtectedRouteComponent>},
             {path:'account/tickets/:id', element:<TicketDetailComponent/>},
 
             {
                 path: 'admin',
-                element: <AdminLayout/>,
+                element:  <ProtectedRouteComponent requireAuth requireStaff><AdminLayout /></ProtectedRouteComponent>,
                 children: [
                     {index: true, element: <AdminPage/>}, // головна адмін панелі
                     {path: 'movies', element: <MovieControlComponent/>},

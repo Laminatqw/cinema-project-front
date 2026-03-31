@@ -8,12 +8,14 @@ type UserSliceType = {
     isLoaded: boolean,
     error: string;
     user: IUser | null;
+    isInitialized: boolean
 }
 const initialState: UserSliceType = {
     users: [],
     isLoaded: true,
     error: '',
-    user: null
+    user: null,
+    isInitialized:false
 
 };
 
@@ -64,12 +66,6 @@ export const userSlice = createSlice({
     extraReducers:builder => {
         builder
             .addCase(
-            getUserInfo.fulfilled,(state,action) =>{
-                state.user = action.payload;
-                state.isLoaded = true;
-                }
-            )
-            .addCase(
                 updateUserInfo.fulfilled,(state,action)=>{
                     state.user = action.payload;
                     state.isLoaded = true;
@@ -83,14 +79,25 @@ export const userSlice = createSlice({
                     state.isLoaded = true
                 }
             )
+            .addCase(getUserInfo.fulfilled, (state, action) => {
+                state.user = action.payload;
+                state.isLoaded = true;
+                state.isInitialized = true;  // додати
+            })
+            .addCase(getUserInfo.rejected, (state) => {
+                state.isLoaded = true;
+                state.isInitialized = true;  // додати — навіть якщо помилка
+            })
             .addMatcher(isRejected(getUserInfo, updateUserInfo, logoutUser),(state, action)=>{
                 state.error = action.payload as string
                 state.isLoaded = true
             })
+
             .addMatcher(isPending(getUserInfo, updateUserInfo, logoutUser),(state)=>{
                 state.isLoaded = false
                 state.error = ''
             })
+
     }
 })
 

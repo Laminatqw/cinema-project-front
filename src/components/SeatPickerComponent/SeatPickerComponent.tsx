@@ -25,12 +25,15 @@ const SeatPickerComponent = ({ session }: IProps) => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        if (session.status === 'finished') return;
         dispatch(sessionActions.getSessionSeats(session.id));
         dispatch(sessionActions.getPrices(session.id));
         setSelectedSeats([]);
         setSuccess(false);
         setError(null);
     }, [session.id]);
+    if (session.status === 'finished') return <p>Ця сесія вже завершена.</p>;
+
 
     const maxRow = sessionSeats.length > 0 ? Math.max(...sessionSeats.map(s => s.row)) : 0;
     const maxNumber = sessionSeats.length > 0 ? Math.max(...sessionSeats.map(s => s.number)) : 0;
