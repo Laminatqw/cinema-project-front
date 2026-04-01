@@ -4,7 +4,6 @@ import { hallActions } from "../../../redux/slices/hallSlice";
 import { IHall } from "../../../models/IHall";
 import { IHallSeat, SeatType } from "../../../models/IHallSeat";
 import "./hallStyle.css"
-import {sessionActions} from "../../../redux/slices/sessionSlice";
 import PaginationComponent from "../../PaginationComponent/PaginationComponent";
 
 const HALL_TYPES = ['standard', 'imax', '3d'];
@@ -17,7 +16,7 @@ const SEAT_COLORS: Record<SeatType, string> = {
 
 const HallControlComponent = () => {
     const dispatch = useAppDispatch();
-    const { halls, seats, error, filters, total_pages } = useAppSelector(state => state.hallStore);
+    const {halls, seats, error, filters, total_pages} = useAppSelector(state => state.hallStore);
 
     // --- Hall form ---
     const [hallFormData, setHallFormData] = useState<Partial<IHall>>({
@@ -40,8 +39,8 @@ const HallControlComponent = () => {
 
     // генерація сітки
     const generateGrid = () => {
-        const newGrid: SeatType[][] = Array.from({ length: rows }, () =>
-            Array.from({ length: seatsPerRow }, () => 'regular')
+        const newGrid: SeatType[][] = Array.from({length: rows}, () =>
+            Array.from({length: seatsPerRow}, () => 'regular')
         );
         setGrid(newGrid);
         setSeatsCreated(false);
@@ -74,7 +73,7 @@ const HallControlComponent = () => {
         const seatsPayload: Partial<IHallSeat>[] = [];
         grid.forEach((row, rowIdx) => {
             row.forEach((seat_type, seatIdx) => {
-                if (seat_type === null) return; // пропускаємо видалені
+                if (seat_type === null) return;
                 seatsPayload.push({
                     hall: selectedHall.id,
                     row: rowIdx + 1,
@@ -83,9 +82,20 @@ const HallControlComponent = () => {
                 });
             });
         });
-        console.log(seatsPayload)
-        await dispatch(hallActions.createSeats({ id: selectedHall.id, seats: seatsPayload }));
+        await dispatch(hallActions.createSeats({id: selectedHall.id, seats: seatsPayload}));
+        await dispatch(hallActions.getAllSeats(selectedHall.id)); // додати — оновить seats в store
         setSeatsCreated(true);
+    };
+    const handleClearGrid = () => {
+        setGrid([]);
+        setSeatsCreated(false);
+    };
+
+    const handleDeleteAllSeats = async () => {
+        if (!selectedHall) return;
+        await dispatch(hallActions.deleteAllSeats(selectedHall.id));
+        setGrid([]);
+        setSeatsCreated(false);
     };
     const handleUpdateSeats = async () => {
         if (!selectedHall) return;
@@ -122,16 +132,17 @@ const HallControlComponent = () => {
             });
         });
 
+
         for (const id of toDelete) {
             await dispatch(hallActions.deleteSeat(id));
         }
 
         if (toUpdate.length > 0) {
-            await dispatch(hallActions.updateSeats({ id: selectedHall.id, seats: toUpdate }));
+            await dispatch(hallActions.updateSeats({id: selectedHall.id, seats: toUpdate}));
         }
 
         if (toCreate.length > 0) {
-            await dispatch(hallActions.createSeats({ id: selectedHall.id, seats: toCreate }));
+            await dispatch(hallActions.createSeats({id: selectedHall.id, seats: toCreate}));
         }
 
         setSeatsCreated(true);
@@ -140,7 +151,7 @@ const HallControlComponent = () => {
 
     // --- Hall handlers ---
     const handleHallChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setHallFormData(prev => ({
             ...prev,
             [name]: name === 'total_seats' ? Number(value) : value,
@@ -156,7 +167,7 @@ const HallControlComponent = () => {
                 setShowSeatEditor(true);
             }
         } else if (selectedHall) {
-            await dispatch(hallActions.updateHall({ id: selectedHall.id, payload: hallFormData }));
+            await dispatch(hallActions.updateHall({id: selectedHall.id, payload: hallFormData}));
         }
         handleHallReset();
         dispatch(hallActions.getAllHalls());
@@ -165,7 +176,7 @@ const HallControlComponent = () => {
     const handleHallSelect = (hall: IHall) => {
         setSelectedHall(hall);
         setHallMode('edit');
-        setHallFormData({ title: hall.title, total_seats: hall.total_seats, hall_type: hall.hall_type });
+        setHallFormData({title: hall.title, total_seats: hall.total_seats, hall_type: hall.hall_type});
         setShowSeatEditor(false);
         setGrid([]);
         setSeatsCreated(false);
@@ -184,8 +195,8 @@ const HallControlComponent = () => {
             const maxRow = Math.max(...seats.map(s => s.row));
             const maxNumber = Math.max(...seats.map(s => s.number));
 
-            const restoredGrid: (SeatType | null)[][] = Array.from({ length: maxRow }, (_, rowIdx) =>
-                Array.from({ length: maxNumber }, (_, seatIdx) => {
+            const restoredGrid: (SeatType | null)[][] = Array.from({length: maxRow}, (_, rowIdx) =>
+                Array.from({length: maxNumber}, (_, seatIdx) => {
                     const seat = seats.find(s => s.row === rowIdx + 1 && s.number === seatIdx + 1);
                     return seat ? seat.seat_type : null;
                 })
@@ -205,7 +216,7 @@ const HallControlComponent = () => {
 
     const handleHallReset = () => {
         setHallMode('create');
-        setHallFormData({ title: '', total_seats: undefined, hall_type: 'standard' });
+        setHallFormData({title: '', total_seats: undefined, hall_type: 'standard'});
     };
 
     const filteredHalls = halls.filter(h =>
@@ -221,114 +232,168 @@ const HallControlComponent = () => {
 
 
     return (
-        <div>
-            <h2>Управління залами</h2>
+        <div className="hall-control">
+            <h2 className="hall-control__title">Управління залами</h2>
 
-            {/* Форма залу */}
-            <form onSubmit={handleHallSubmit}>
-                <h3>{hallMode === 'create' ? 'Додати зал' : `Редагувати: ${selectedHall?.title}`}</h3>
-                <div>
+            {/* ===== FORM ===== */}
+            <form className="hall-form" onSubmit={handleHallSubmit}>
+                <h3 className="hall-form__title">
+                    {hallMode === 'create' ? 'Додати зал' : `Редагувати: ${selectedHall?.title}`}
+                </h3>
+
+                <div className="hall-form__group">
                     <label>Назва</label>
-                    <input name="title" placeholder="Назва залу" value={hallFormData.title || ''} onChange={handleHallChange} required />
+                    <input
+                        className="hall-form__input"
+                        name="title"
+                        value={hallFormData.title || ''}
+                        onChange={handleHallChange}
+                        required
+                    />
                 </div>
-                <div>
+
+                <div className="hall-form__group">
                     <label>Кількість місць</label>
-                    <input name="total_seats" type="number" placeholder="Кількість місць" value={hallFormData.total_seats || ''} onChange={handleHallChange} required />
+                    <input
+                        className="hall-form__input"
+                        name="total_seats"
+                        type="number"
+                        value={hallFormData.total_seats || ''}
+                        onChange={handleHallChange}
+                        required
+                    />
                 </div>
-                <div>
+
+                <div className="hall-form__group">
                     <label>Тип залу</label>
-                    <select name="hall_type" value={hallFormData.hall_type || 'standard'} onChange={handleHallChange}>
+                    <select
+                        className="hall-form__select"
+                        name="hall_type"
+                        value={hallFormData.hall_type || 'standard'}
+                        onChange={handleHallChange}
+                    >
                         {HALL_TYPES.map(type => (
                             <option key={type} value={type}>{type.toUpperCase()}</option>
                         ))}
                     </select>
                 </div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                <button type="submit">{hallMode === 'create' ? 'Створити' : 'Зберегти'}</button>
-                {hallMode === 'edit' && <button type="button" onClick={handleHallReset}>Скасувати</button>}
+
+                {error && <p className="hall-form__error">{error}</p>}
+
+                <div className="hall-form__actions">
+                    <button className="btn btn--primary" type="submit">
+                        {hallMode === 'create' ? 'Створити' : 'Зберегти'}
+                    </button>
+
+                    {hallMode === 'edit' && (
+                        <button className="btn btn--secondary" type="button" onClick={handleHallReset}>
+                            Скасувати
+                        </button>
+                    )}
+                </div>
             </form>
 
-            {/* Редактор місць */}
+            {/* ===== SEAT EDITOR ===== */}
             {showSeatEditor && selectedHall && (
-                <div>
-                    <h3>Редактор місць — {selectedHall.title}</h3>
-                    <div>
-                        <label>Рядів: </label>
-                        <input type="number" min={1} value={rows} onChange={e => setRows(Number(e.target.value))} />
-                        <label> Місць в ряду: </label>
-                        <input type="number" min={1} value={seatsPerRow} onChange={e => setSeatsPerRow(Number(e.target.value))} />
-                        <button type="button" onClick={generateGrid}>Згенерувати сітку</button>
+                <div className="seat-editor">
+                    <h3 className="seat-editor__title">Редактор місць — {selectedHall.title}</h3>
+
+                    <div className="seat-editor__controls">
+                        <label>Рядів:</label>
+                        <input type="number" min={1} value={rows} onChange={e => setRows(Number(e.target.value))}/>
+
+                        <label>Місць:</label>
+                        <input type="number" min={1} value={seatsPerRow}
+                               onChange={e => setSeatsPerRow(Number(e.target.value))}/>
+
+                        <button className="btn btn--primary" type="button" onClick={generateGrid}>
+                            Згенерувати
+                        </button>
                     </div>
 
-                    {/* Легенда */}
+                    {/* Legend */}
                     {grid.length > 0 && (
-                        <div style={{ margin: '10px 0' }}>
-                            {(Object.entries(SEAT_COLORS) as [SeatType, string][]).map(([type, color]) => (
-                                <span key={type} style={{ marginRight: '15px' }}>
-                                    <span style={{ display: 'inline-block', width: 16, height: 16, background: color, marginRight: 4, verticalAlign: 'middle' }} />
+                        <div className="seat-legend">
+                            {(Object.entries(SEAT_COLORS)).map(([type, color]) => (
+                                <span key={type} className="seat-legend__item">
+                                <span className="seat-legend__color" style={{background: color}}/>
                                     {type}
-                                </span>
+                            </span>
                             ))}
-                            <small> (клікни на місце щоб змінити тип)</small>
+                            <small className="seat-legend__hint">клік — змінити тип, ПКМ — видалити</small>
                         </div>
                     )}
-                <div className={'tableDiv'}>
-                    {/* Сітка */}
-                    <div style={{ overflowX: 'auto' }}>
-                        {grid.map((row, rowIdx) => (
-                            <div key={rowIdx} style={{ display: 'flex', alignItems: 'center', marginBottom: 4 }}>
-                                <span style={{ width: 30, fontSize: 12 }}>R{rowIdx + 1}</span>
-                                {row.map((seatType, seatIdx) => (
-                                    <div
-                                        key={seatIdx}
-                                        onClick={() => toggleSeatType(rowIdx, seatIdx)}
-                                        onContextMenu={(e) => toggleSeatExistence(rowIdx, seatIdx, e)}
-                                        style={{
-                                            width: 28, height: 28, margin: 2,
-                                            background: grid[rowIdx][seatIdx] === null ? '#ccc' : SEAT_COLORS[grid[rowIdx][seatIdx]!],
-                                            borderRadius: 4,
-                                            cursor: 'pointer',
-                                            opacity: grid[rowIdx][seatIdx] === null ? 0.3 : 1,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            fontSize: 10, color: '#fff', fontWeight: 'bold',
-                                        }}
-                                    >
-                                        {grid[rowIdx][seatIdx] !== null ? seatIdx + 1 : ''}
-                                    </div>
-                                ))}
-                            </div>
-                        ))}
+
+                    <div className="seat-layout">
+                        <div className="seat-grid-wrapper">
+                            {grid.map((row, rowIdx) => (
+                                <div key={rowIdx} className="seat-row">
+                                    <span className="seat-row__label">R{rowIdx + 1}</span>
+
+                                    {row.map((seatType, seatIdx) => (
+                                        <div
+                                            key={seatIdx}
+                                            onClick={() => toggleSeatType(rowIdx, seatIdx)}
+                                            onContextMenu={(e) => toggleSeatExistence(rowIdx, seatIdx, e)}
+                                            className={`seat 
+                                            ${seatType === null ? 'seat--disabled' : ''}`}
+                                            style={{
+                                                background: seatType === null ? '#ccc' : SEAT_COLORS[seatType]
+                                            }}
+                                        >
+                                            {seatType !== null ? seatIdx + 1 : ''}
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="seat-layout__info">
+                            <h4>Інструкція</h4>
+                            <p>ЛКМ — змінити тип місця</p>
+                            <p>ПКМ — видалити місце</p>
+                            <p>Щоб змінити існуючу сітку(кількість місць, не їх вид) місць потрібно видалити місця в
+                                певному залі, а потім створити заново, вже так як вам потрібно</p>
+                            <p>Кнопка очистити просто позволяє очистити сітку(не видаляє вже створені місця)</p>
+                        </div>
                     </div>
 
-                    <h1>Надпис-Інструкція</h1>
-
-                </div>
                     {grid.length > 0 && (
-                        <>
-                            <button type="button" onClick={handleSaveSeats} disabled={seatsCreated}>
-                                {seatsCreated ? '✅ Місця оновлено/збережено' : 'Створити місця'}
+                        <div className="seat-editor__actions">
+                            <button className="btn btn--primary" onClick={handleSaveSeats}>
+                                {seatsCreated ? '✅ Збережено' : 'Створити місця'}
                             </button>
+
                             {seats.length > 0 && (
-                                <button type="button" onClick={handleUpdateSeats}>
-                                    Оновити місця
+                                <button className="btn btn--edit" onClick={handleUpdateSeats}>
+                                    Оновити
                                 </button>
                             )}
-                        </>
+
+                            <button className="btn btn--secondary" onClick={handleClearGrid}>
+                                Очистити
+                            </button>
+
+                            <button className="btn btn--danger" onClick={handleDeleteAllSeats}>
+                                Видалити всі
+                            </button>
+                        </div>
                     )}
                 </div>
             )}
 
-            {/* Пошук */}
+            {/* ===== SEARCH ===== */}
             <input
+                className="hall-search"
                 placeholder="Пошук залу..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                style={{ marginTop: 20 }}
             />
 
-            {/* Список залів */}
-            <h3>Список залів</h3>
-            <table>
+            {/* ===== TABLE ===== */}
+            <h3 className="hall-list__title">Список залів</h3>
+
+            <table className="hall-table">
                 <thead>
                 <tr>
                     <th>ID</th>
@@ -345,24 +410,30 @@ const HallControlComponent = () => {
                         <td>{hall.title}</td>
                         <td>{hall.hall_type.toUpperCase()}</td>
                         <td>{hall.total_seats}</td>
-                        <td>
-                            <button onClick={() => handleHallSelect(hall)}>Редагувати</button>
-                            <button onClick={() => handleOpenSeatEditor(hall)}>Місця</button>
-                            <button onClick={() => handleHallDelete(hall.id)}>Видалити</button>
+                        <td className="hall-table__actions">
+                            <button className="btn btn--edit" onClick={() => handleHallSelect(hall)}>Редагувати</button>
+                            <button className="btn btn--primary" onClick={() => handleOpenSeatEditor(hall)}>Місця
+                            </button>
+                            <button className="btn btn--danger" onClick={() => handleHallDelete(hall.id)}>Видалити
+                            </button>
                         </td>
                     </tr>
                 ))}
                 </tbody>
             </table>
-            <PaginationComponent currentPage={filters.page || 1}
-                                 totalPages={total_pages || 1}
-                                 onPageChange={handlePageChange}
-                                 pageSize={filters.size ||10}
-                                 onPageSizeChange={handlePageSizeChange}
-                                 storageKey="halls-pagination"
-            />
+
+            <div className="pagination-wrapper">
+                <PaginationComponent
+                    currentPage={filters.page || 1}
+                    totalPages={total_pages || 1}
+                    onPageChange={handlePageChange}
+                    pageSize={filters.size || 10}
+                    onPageSizeChange={handlePageSizeChange}
+                    storageKey="halls-pagination"
+                />
+            </div>
         </div>
     );
-};
+}
 
 export default HallControlComponent;

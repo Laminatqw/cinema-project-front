@@ -35,34 +35,40 @@ const MovieSessionsComponent = ({ movieId }: IProps) => {
     const getHallName = (id: number) => halls.find(h => h.id === id)?.title ?? id;
     const getHallType = (id: number) => halls.find(h => h.id === id)?.hall_type ?? id;
 
-    if (upcomingSessions.length === 0) return <p>Немає доступних сесій</p>;
+    if (upcomingSessions.length === 0) return <p className={'movie-sessions__empty'}>Немає доступних сесій</p>;
 
     return (
-        <div>
-            <h3>Доступні сеанси</h3>
-            <div className={'films'}>
+        <div className={'movie-sessions'}>
+            <h3 className={'movie-sessions__title'}>Доступні сеанси</h3>
+            <div className={'movie-sessions__grid'}>
                 {upcomingSessions.map(session => (
 
-                    <div key={session.id}>
-                        <p>Зал: {getHallName(session.hall)}</p>
-                        <p>Тип: {getHallType(session.hall)}</p>
-                        <p>Початок: {session.start_time ? new Date(session.start_time).toLocaleString('uk-UA') : '—'}</p>
-                        <p>Кінець: {session.end_time ? new Date(session.end_time).toLocaleString('uk-UA') : '—'}</p>
-                        <Link to={`/sessions/${session.id}/seats`}>
-                            <button>Обрати місця</button>
+                    <div className={'movie-sessions__card'} key={session.id}>
+                        <p className={'movie-sessions__meta'}>Зал: <span>{getHallName(session.hall)}</span></p>
+                        <p className={'movie-sessions__meta'}>Тип: <span>{String(getHallType(session.hall)).toUpperCase()}</span></p>
+                        <p className={'movie-sessions__meta'}>
+                            Початок: <span>{session.start_time ? new Date(session.start_time).toLocaleString('uk-UA') : '—'}</span>
+                        </p>
+                        <p className={'movie-sessions__meta'}>
+                            Кінець: <span>{session.end_time ? new Date(session.end_time).toLocaleString('uk-UA') : '—'}</span>
+                        </p>
+                        <Link className={'movie-sessions__link'} to={`/sessions/${session.id}/seats`}>
+                            <button className={'movie-sessions__btn'}>Обрати місця</button>
                         </Link>
                     </div>
 
                 ))}
 
             </div>
-            <PaginationComponent currentPage={filters.page || 1}
-                                 totalPages={total_pages || 1}
-                                 onPageChange={handlePageChange}
-                                 pageSize={filters.size ||10}
-                                 onPageSizeChange={handlePageSizeChange}
-                                 storageKey="movieSessions-pagination"
-            />
+            <div className={'movie-sessions__pagination'}>
+                <PaginationComponent currentPage={filters.page || 1}
+                                     totalPages={total_pages || 1}
+                                     onPageChange={handlePageChange}
+                                     pageSize={filters.size ||10}
+                                     onPageSizeChange={handlePageSizeChange}
+                                     storageKey="movieSessions-pagination"
+                />
+            </div>
         </div>
     );
 };

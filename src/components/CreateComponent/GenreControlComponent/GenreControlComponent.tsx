@@ -2,11 +2,11 @@ import React, {useEffect, useState} from 'react';
 import {useAppDispatch, useAppSelector} from "../../../redux/store";
 import {IGenre} from "../../../models/IGenre";
 import {movieActions} from "../../../redux/slices/movieSlice";
-
+import './styles.css'
 const GenreControlComponent = () => {
 
     const dispatch = useAppDispatch();
-    const{genres, error} = useAppSelector(state => state.movieStore)
+    const {genres, error} = useAppSelector(state => state.movieStore)
     const [selectedGenre, setSelectedGenre] = useState<IGenre | null>(null);
     const [genreName, setGenreName] = useState('');
     const [mode, setMode] = useState<'create' | 'edit'>('create');
@@ -29,9 +29,9 @@ const GenreControlComponent = () => {
     const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
         if (mode === 'create') {
-            await dispatch(movieActions.createGenre({ id: 0, genre_name: genreName }));
+            await dispatch(movieActions.createGenre({id: 0, genre_name: genreName}));
         } else if (selectedGenre) {
-            await dispatch(movieActions.updateGenre({ id: selectedGenre.id, payload: { genre_name: genreName } }));
+            await dispatch(movieActions.updateGenre({id: selectedGenre.id, payload: {genre_name: genreName}}));
         }
         handleReset();
         dispatch(movieActions.getAllGenres());
@@ -49,34 +49,48 @@ const GenreControlComponent = () => {
     };
 
 
-
-
-
     return (
-        <div>
-            <h2>Управління жанрами</h2>
+        <div className="genre-control">
+            <h2 className="genre-control__title">Управління жанрами</h2>
 
-            <form onSubmit={handleSubmit}>
-                <h3>{mode === 'create' ? 'Додати жанр' : `Редагувати: ${selectedGenre?.genre_name}`}</h3>
+            <form className="genre-form" onSubmit={handleSubmit}>
+                <h3 className="genre-form__title">
+                    {mode === 'create' ? 'Додати жанр' : `Редагувати: ${selectedGenre?.genre_name}`}
+                </h3>
+
                 <input
+                    className="genre-form__input"
                     placeholder="Назва жанру"
                     value={genreName}
                     onChange={e => setGenreName(e.target.value)}
                     required
                 />
-                {error && <p style={{color: 'red'}}>{error}</p>}
-                <button type="submit">{mode === 'create' ? 'Створити' : 'Зберегти'}</button>
-                {mode === 'edit' && <button type="button" onClick={handleReset}>Скасувати</button>}
+
+                {error && <p className="genre-form__error">{error}</p>}
+
+                <div className="genre-form__actions">
+                    <button className="btn btn--primary" type="submit">
+                        {mode === 'create' ? 'Створити' : 'Зберегти'}
+                    </button>
+
+                    {mode === 'edit' && (
+                        <button className="btn btn--secondary" type="button" onClick={handleReset}>
+                            Скасувати
+                        </button>
+                    )}
+                </div>
             </form>
 
             <input
+                className="genre-search"
                 placeholder="Пошук жанру..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
             />
 
-            <h3>Список жанрів</h3>
-            <table>
+            <h3 className="genre-list__title">Список жанрів</h3>
+
+            <table className="genre-table">
                 <thead>
                 <tr>
                     <th>ID</th>
@@ -89,9 +103,19 @@ const GenreControlComponent = () => {
                     <tr key={genre.id}>
                         <td>{genre.id}</td>
                         <td>{genre.genre_name}</td>
-                        <td>
-                            <button onClick={() => handleSelect(genre)}>Редагувати</button>
-                            <button onClick={() => handleDelete(genre.id)}>Видалити</button>
+                        <td className="genre-table__actions">
+                            <button
+                                className="btn btn--edit"
+                                onClick={() => handleSelect(genre)}
+                            >
+                                Редагувати
+                            </button>
+                            <button
+                                className="btn btn--danger"
+                                onClick={() => handleDelete(genre.id)}
+                            >
+                                Видалити
+                            </button>
                         </td>
                     </tr>
                 ))}

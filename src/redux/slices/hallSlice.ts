@@ -158,6 +158,18 @@ let deleteSeat = createAsyncThunk<IHallSeat, number>(
     }
 )
 
+let deleteAllSeats = createAsyncThunk<{deleted: number}, number>(
+    'hallSlice/deleteAllSeats', async (hallId, thunkAPI) => {
+        try {
+            let result = await hallServices.deleteAllSeats(hallId);
+            return thunkAPI.fulfillWithValue(result);
+        } catch (e) {
+            let error = e as AxiosError<{detail: string}>;
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to delete seats');
+        }
+    }
+)
+
 
 
 export const hallSlice = createSlice({
@@ -221,13 +233,17 @@ export const hallSlice = createSlice({
                 state.seat = null;
                 state.seats = state.seats.filter(s => s.id !== action.payload.id);
             })
+            .addCase(deleteAllSeats.fulfilled, (state) => {
+                state.seats = [];
+                state.isLoaded = false;
+            })
 
         // ---- Matchers ----
         builder
             .addMatcher(
                 isPending(
                     getAllHalls, getHallById, createHall, updateHall, deleteHall,
-                    getAllSeats, getHallSeatById, createSeats, updateSeats, deleteSeat
+                    getAllSeats, getHallSeatById, createSeats, updateSeats, deleteSeat, deleteAllSeats
                 ),
                 (state) => {
                     state.isLoaded = true;
@@ -237,7 +253,7 @@ export const hallSlice = createSlice({
             .addMatcher(
                 isFulfilled(
                     getAllHalls, getHallById, createHall, updateHall, deleteHall,
-                    getAllSeats, getHallSeatById, createSeats, updateSeats, deleteSeat
+                    getAllSeats, getHallSeatById, createSeats, updateSeats, deleteSeat, deleteAllSeats
                 ),
                 (state) => {
                     state.isLoaded = false;
@@ -246,7 +262,7 @@ export const hallSlice = createSlice({
             .addMatcher(
                 isRejected(
                     getAllHalls, getHallById, createHall, updateHall, deleteHall,
-                    getAllSeats, getHallSeatById, createSeats, updateSeats, deleteSeat
+                    getAllSeats, getHallSeatById, createSeats, updateSeats, deleteSeat, deleteAllSeats
                 ),
                 (state, action) => {
                     state.isLoaded = false;
@@ -259,5 +275,5 @@ export const hallSlice = createSlice({
 export const hallActions = {
     ...hallSlice.actions,
     getAllHalls, getHallById, createHall, updateHall, deleteHall,
-    getAllSeats, getHallSeatById, createSeats, updateSeats, deleteSeat
+    getAllSeats, getHallSeatById, createSeats, updateSeats, deleteSeat, deleteAllSeats
 }

@@ -1,10 +1,11 @@
 import React from 'react';
-
+import './styles.css'
 const AdminPage = () => {
     return (
-        <div>
-            adminPage<br/>
-            TODO:Continue_design;fix_pagination
+        <div className="admin-page">
+            <h2>Dashboard</h2>
+
+            TODO:Fix_SearchSelect_in_SessionControl
         </div>
     );
 };

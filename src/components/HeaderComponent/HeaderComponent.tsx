@@ -28,9 +28,9 @@ const HeaderComponent = () => {
     return (
         <div className={'header'}>
             <div className={'header__nav'}>
-                <Link className={'header__link'} to={'/movies'}>to movies</Link>
-                <Link className={'header__link'} to={'/'}>to homepage</Link>
-                <Link className={'header__link'} to={'/filter'}>to filter</Link>
+                <Link className={'header__link'} to={'/movies'}>Фільми</Link>
+                <Link className={'header__link'} to={'/'}>Головна сторінка</Link>
+                <Link className={'header__link'} to={'/filter'}>Сеанси</Link>
                 {user?.is_staff && <Link className={'header__link header__link--admin'} to={'/admin'}>Адмін панель</Link>}
             </div>
 

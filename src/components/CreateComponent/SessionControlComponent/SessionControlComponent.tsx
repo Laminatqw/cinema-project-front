@@ -12,6 +12,8 @@ import {movieServices} from "../../../services/movie.services";
 import {hallServices} from "../../../services/hall.services";
 import {IHall} from "../../../models/IHall";
 import {IMovie} from "../../../models/IMovie";
+import './styles.css'
+
 
 const SEAT_TYPES: SeatType[] = ['regular', 'vip', 'disabled'];
 
@@ -166,85 +168,140 @@ const SessionControlComponent = () => {
 
 
     return (
-        <div>
-            <h2>Управління сесіями</h2>
+        <div className="session-control">
+            <h2 className="session-control__title">Управління сесіями</h2>
 
-            {/* Форма сесії */}
-            <form onSubmit={handleSubmit}>
-                <h3>{mode === 'create' ? 'Додати сесію' : `Редагувати сесію #${selectedSession?.id}`}</h3>
-                <div>
-                    <label>Фільм</label>
-                    <SearchSelect<IMovie>
-                        fetchItems={async (query) => {
+            {/* ===== FORM ===== */}
+            <form className="session-form" onSubmit={handleSubmit}>
+                <h3 className="session-form__title">
+                    {mode === 'create' ? 'Додати сесію' : `Редагувати сесію #${selectedSession?.id}`}
+                </h3>
+
+                <div className="session-form__grid">
+                    <div className="session-form__group">
+                        <label>Фільм</label>
+                        <div className="session-form__select">
+                        <SearchSelect<IMovie> fetchItems={async (query) => {
                             const res = await movieServices.getAll({ name: query, size: 20 });
                             return res.data;
                         }}
-                        value={formData.movie}
-                        getLabel={m => m.name}
-                        getId={m => m.id}
-                        placeholder="Пошук фільму..."
-                        onSelect={id => setFormData(prev => ({ ...prev, movie: id }))}
-                    />
+                                              value={formData.movie}
+                                              getLabel={m => m.name}
+                                              getId={m => m.id}
+                                              placeholder="Пошук фільму..."
+                                              onSelect={id => setFormData(prev => (
+                                                  { ...prev, movie: id }
+                                              ))} />
+                        </div>
+                    </div>
+
+                    <div className="session-form__group">
+                        <label>Зал</label>
+                        <div className="session-form__select">
+                            <SearchSelect<IHall> fetchItems={async (query) => {
+                                const res = await hallServices.getAll({ size: 20 });
+                                return res.data.filter((h: IHall) => h.title.toLowerCase().includes(query.toLowerCase())); }}
+                                                 value={formData.hall} getLabel={h => h.title}
+                                                 getId={h => h.id}
+                                                 placeholder="Пошук залу..."
+                                                 onSelect={id => setFormData(
+                                                     prev => ({ ...prev, hall: id }))} />
+                        </div>
+                    </div>
+
+                    <div className="session-form__group">
+                        <label>Початок</label>
+                        <input
+                            className="session-form__input"
+                            name="start_time"
+                            type="datetime-local"
+                            value={formData.start_time || ''}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    <div className="session-form__group">
+                        <label>Кінець</label>
+                        <input
+                            className="session-form__input"
+                            name="end_time"
+                            type="datetime-local"
+                            value={formData.end_time || ''}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
                 </div>
-                <div>
-                    <label>Зал</label>
-                    <SearchSelect<IHall>
-                        fetchItems={async (query) => {
-                            const res = await hallServices.getAll({ size: 20 });
-                            return res.data.filter((h: IHall) => h.title.toLowerCase().includes(query.toLowerCase()));
-                        }}
-                        value={formData.hall}
-                        getLabel={h => h.title}
-                        getId={h => h.id}
-                        placeholder="Пошук залу..."
-                        onSelect={id => setFormData(prev => ({ ...prev, hall: id }))}
-                    />
+
+                {error && <p className="session-form__error">{error}</p>}
+
+                <div className="session-form__actions">
+                    <button className="btn btn--primary" type="submit">
+                        {mode === 'create' ? 'Створити' : 'Зберегти'}
+                    </button>
+
+                    {mode === 'edit' && (
+                        <button className="btn btn--secondary" onClick={handleReset}>
+                            Скасувати
+                        </button>
+                    )}
                 </div>
-                <div>
-                    <label>Початок</label>
-                    <input name="start_time" type="datetime-local" value={formData.start_time || ''} onChange={handleChange} required />
-                </div>
-                <div>
-                    <label>Кінець</label>
-                    <input name="end_time" type="datetime-local" value={formData.end_time || ''} onChange={handleChange} required />
-                </div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                <button type="submit">{mode === 'create' ? 'Створити' : 'Зберегти'}</button>
-                {mode === 'edit' && <button type="button" onClick={handleReset}>Скасувати</button>}
             </form>
 
-            {/* Редактор цін */}
+            {/* ===== PRICES ===== */}
             {showPrices && selectedSession && (
-                <div>
-                    <h3>Ціни для сесії #{selectedSession.id} — {getMovieName(selectedSession.movie)}</h3>
-                    <form onSubmit={handlePriceSubmit}>
-                        <select name="seat_type" value={priceFormData.seat_type} onChange={handlePriceChange}>
+                <div className="price-editor">
+                    <h3 className="price-editor__title">
+                        Ціни — #{selectedSession.id}
+                    </h3>
+
+                    <form className="price-form" onSubmit={handlePriceSubmit}>
+                        <select
+                            className="price-form__select"
+                            name="seat_type"
+                            value={priceFormData.seat_type}
+                            onChange={handlePriceChange}
+                        >
                             {SEAT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                         </select>
+
                         <input
-                            name="price" type="number" min="0" step="0.01"
-                            placeholder="Ціна" value={priceFormData.price || ''}
-                            onChange={handlePriceChange} required
+                            className="price-form__input"
+                            name="price"
+                            type="number"
+                            value={priceFormData.price || ''}
+                            onChange={handlePriceChange}
+                            required
                         />
-                        <button type="submit">{editingPrice ? 'Зберегти' : 'Додати ціну'}</button>
+
+                        <button className="btn btn--primary" type="submit">
+                            {editingPrice ? 'Зберегти' : 'Додати'}
+                        </button>
+
                         {editingPrice && (
-                            <button type="button" onClick={() => { setEditingPrice(null); setPriceFormData({ seat_type: 'regular', price: 0 }); }}>
+                            <button className="btn btn--secondary" type="button">
                                 Скасувати
                             </button>
                         )}
                     </form>
-                    <table>
+
+                    <table className="price-table">
                         <thead>
-                        <tr><th>Тип місця</th><th>Ціна</th><th>Дії</th></tr>
+                        <tr>
+                            <th>Тип</th>
+                            <th>Ціна</th>
+                            <th>Дії</th>
+                        </tr>
                         </thead>
                         <tbody>
                         {prices.map(price => (
                             <tr key={price.id}>
                                 <td>{price.seat_type}</td>
                                 <td>{price.price} грн</td>
-                                <td>
-                                    <button onClick={() => handleEditPrice(price)}>Редагувати</button>
-                                    <button onClick={() => handleDeletePrice(price.id)}>Видалити</button>
+                                <td className="price-table__actions">
+                                    <button className="btn btn--edit">Редагувати</button>
+                                    <button className="btn btn--danger">Видалити</button>
                                 </td>
                             </tr>
                         ))}
@@ -253,14 +310,20 @@ const SessionControlComponent = () => {
                 </div>
             )}
 
-            {/* Пошук і фільтр */}
-            <div style={{ marginTop: 20, display: 'flex', gap: 10 }}>
+            {/* ===== FILTERS ===== */}
+            <div className="session-filters">
                 <input
-                    placeholder="Пошук за назвою фільму..."
+                    className="session-search"
+                    placeholder="Пошук..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                 />
-                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value as SessionStatus | 'all')}>
+
+                <select
+                    className="session-filter"
+                    value={statusFilter}
+                    onChange={e => setStatusFilter(e.target.value as SessionStatus | 'all')}
+                >
                     <option value="all">Всі</option>
                     <option value="upcoming">Майбутні</option>
                     <option value="active">Активні</option>
@@ -268,9 +331,10 @@ const SessionControlComponent = () => {
                 </select>
             </div>
 
-            {/* Список сесій */}
-            <h3>Список сесій</h3>
-            <table>
+            {/* ===== TABLE ===== */}
+            <h3 className="session-list__title">Список сесій</h3>
+
+            <table className="session-table">
                 <thead>
                 <tr>
                     <th>ID</th>
@@ -282,6 +346,7 @@ const SessionControlComponent = () => {
                     <th>Дії</th>
                 </tr>
                 </thead>
+
                 <tbody>
                 {filteredSessions.map(session => (
                     <tr key={session.id}>
@@ -290,25 +355,31 @@ const SessionControlComponent = () => {
                         <td>{getHallName(session.hall)}</td>
                         <td>{session.start_time ? new Date(session.start_time).toLocaleString('uk-UA') : '—'}</td>
                         <td>{session.end_time ? new Date(session.end_time).toLocaleString('uk-UA') : '—'}</td>
-                        <td>{STATUS_LABELS[session.status] ?? '⚪'}</td>
-                        <td>
-                            <button onClick={() => handleSelect(session)}>Редагувати</button>
-                            <button onClick={() => handleOpenPrices(session)}>Ціни</button>
-                            <button onClick={() => handleDelete(session.id)}>Видалити</button>
+
+                        <td className={`session-status session-status--${session.status}`}>
+                            {STATUS_LABELS[session.status]}
+                        </td>
+
+                        <td className="session-table__actions">
+                            <button className="btn btn--edit" onClick={() => handleSelect(session)}>Редагувати</button>
+                            <button className="btn btn--primary" onClick={() => handleOpenPrices(session)}>Ціни</button>
+                            <button className="btn btn--danger" onClick={() => handleDelete(session.id)}>Видалити</button>
                         </td>
                     </tr>
                 ))}
                 </tbody>
-
             </table>
-            <PaginationComponent currentPage={filters.page || 1}
-                                 totalPages={total_pages || 1}
-                                 onPageChange={handlePageChange}
-                                 pageSize={filters.size ||10}
-                                 onPageSizeChange={handlePageSizeChange}
-                                 storageKey="sessions-pagination"
-            />
 
+            <div className="pagination-wrapper">
+                <PaginationComponent
+                    currentPage={filters.page || 1}
+                    totalPages={total_pages || 1}
+                    onPageChange={handlePageChange}
+                    pageSize={filters.size || 10}
+                    onPageSizeChange={handlePageSizeChange}
+                    storageKey="sessions-pagination"
+                />
+            </div>
         </div>
     );
 };

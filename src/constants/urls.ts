@@ -27,7 +27,9 @@ export const urls = {
         byId:(id:number)=> urls.halls.base + '/' + id,
         seats:(id:number) => urls.halls.byId(id) + '/seats',
         seatsUpdate:(id:number) => urls.halls.seats(id) + '/update',
-        seatById:(id:number)=>  urls.halls.base + '/seats/' + id
+        seatById:(id:number)=>  urls.halls.base + '/seats/' + id,
+        seatsDeleteAll: (hallId: number) => urls.halls.byId(hallId) + '/seats/delete-all',
+
     },
     sessions:{
         base:'/sessions',
@@ -35,6 +37,7 @@ export const urls = {
         price:(sessionID:number) => urls.sessions.base + '/' +sessionID + '/prices',
         priceById:(sessionID:number, id:number) => urls.sessions.base + '/' + sessionID + '/prices/' + id,
         seats:(sessionID:number) => urls.sessions.byId(sessionID) + '/seats',
+
 
     },
     tickets:{

@@ -1,6 +1,65 @@
-.films{
+.movie-sessions {
+    margin-top: 8px;
+}
+
+.movie-sessions__title {
+    margin: 0 0 12px;
+    color: #f8fafc;
+    font-size: 22px;
+}
+
+.movie-sessions__empty {
+    color: #cbd5e1;
+}
+
+.movie-sessions__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+}
+
+.movie-sessions__card {
+    border: 1px solid #1f2937;
+    border-radius: 12px;
+    background: #0f172a;
+    padding: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.movie-sessions__meta {
+    margin: 0 0 8px;
+    color: #93a4bd;
+    font-size: 14px;
+}
+
+.movie-sessions__meta span {
+    color: #e5e7eb;
+}
+
+.movie-sessions__link {
+    text-decoration: none;
+}
+
+.movie-sessions__btn {
+    margin-top: 6px;
+    width: 100%;
+    border: 1px solid #2563eb;
+    background: #2563eb;
+    color: #eff6ff;
+    border-radius: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.movie-sessions__btn:hover {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
+.movie-sessions__pagination {
+    margin-top: 14px;
     display: flex;
-    flex-direction: row;
-    overflow-wrap: normal;
-    border: 10px;
+    justify-content: center;
 }

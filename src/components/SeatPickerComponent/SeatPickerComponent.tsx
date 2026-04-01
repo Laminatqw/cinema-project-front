@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { ISessionSeat } from "../../models/ISessionSeat";
 import { sessionActions } from "../../redux/slices/sessionSlice";
 import { ticketActions } from "../../redux/slices/tickerSlice";
+import './styles.css';
 
 const SEAT_COLORS: Record<string, string> = {
     regular: '#4a90e2',
@@ -32,7 +33,7 @@ const SeatPickerComponent = ({ session }: IProps) => {
         setSuccess(false);
         setError(null);
     }, [session.id]);
-    if (session.status === 'finished') return <p>Ця сесія вже завершена.</p>;
+    if (session.status === 'finished') return <p className={'seat-picker__state'}>Ця сесія вже завершена.</p>;
 
 
     const maxRow = sessionSeats.length > 0 ? Math.max(...sessionSeats.map(s => s.row)) : 0;
@@ -85,78 +86,81 @@ const SeatPickerComponent = ({ session }: IProps) => {
         }
     };
 
-    if (sessionSeats.length === 0) return <p>Завантаження місць...</p>;
+    if (sessionSeats.length === 0) return <p className={'seat-picker__state'}>Завантаження місць...</p>;
 
     return (
-        <div>
+        <div className={'seat-picker'}>
             {/* Легенда */}
-            <div style={{ display: 'flex', gap: 15, marginBottom: 10 }}>
+            <div className={'seat-picker__legend'}>
                 {Object.entries(SEAT_COLORS).map(([type, color]) => (
-                    <span key={type}>
-                        <span style={{ display: 'inline-block', width: 14, height: 14, background: color, marginRight: 4, verticalAlign: 'middle', borderRadius: 3 }} />
+                    <span className={'seat-picker__legend-item'} key={type}>
+                        <span className={'seat-picker__legend-dot'} style={{ background: color }} />
                         {type}
                     </span>
                 ))}
-                <span>
-                    <span style={{ display: 'inline-block', width: 14, height: 14, background: '#ccc', marginRight: 4, verticalAlign: 'middle', borderRadius: 3 }} />
+                <span className={'seat-picker__legend-item'}>
+                    <span className={'seat-picker__legend-dot'} style={{ background: '#9ca3af' }} />
                     зайняте
                 </span>
-                <span>
-                    <span style={{ display: 'inline-block', width: 14, height: 14, background: '#ff6b6b', marginRight: 4, verticalAlign: 'middle', borderRadius: 3 }} />
+                <span className={'seat-picker__legend-item'}>
+                    <span className={'seat-picker__legend-dot'} style={{ background: '#ff6b6b' }} />
                     обрано
                 </span>
             </div>
 
             {/* Сітка */}
-            <div style={{ overflowX: 'auto' }}>
-                {grid.map((row, rowIdx) => (
-                    <div key={rowIdx} style={{ display: 'flex', alignItems: 'center', marginBottom: 4 }}>
-                        <span style={{ width: 30, fontSize: 12 }}>R{rowIdx + 1}</span>
-                        {row.map((seat, seatIdx) => {
-                            if (!seat) return <div key={seatIdx} style={{ width: 30, height: 30, margin: 2 }} />;
-                            const isSelected = !!selectedSeats.find(s => s.id === seat.id);
-                            const isTaken = seat.is_taken;
-                            return (
-                                <div
-                                    key={seatIdx}
-                                    onClick={() => handleSeatClick(seat)}
-                                    title={`Ряд ${seat.row}, Місце ${seat.number} — ${seat.seat_type} — ${getPriceLabel(seat)}`}
-                                    style={{
-                                        width: 30, height: 30, margin: 2,
-                                        borderRadius: 4,
-                                        cursor: isTaken ? 'not-allowed' : 'pointer',
-                                        background: isTaken ? '#ccc' : isSelected ? '#ff6b6b' : SEAT_COLORS[seat.seat_type],
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: 10, color: '#fff', fontWeight: 'bold',
-                                        border: isSelected ? '2px solid #c0392b' : 'none',
-                                        opacity: isTaken ? 0.5 : 1,
-                                    }}
-                                >
-                                    {seat.number}
-                                </div>
-                            );
-                        })}
+            <div className={'seat-picker__grid-wrap'}>
+                <div className={'seat-picker__hall'}>
+                    <div className={'seat-picker__screen'}>Екран</div>
+                    <div className={'seat-picker__rows'}>
+                        {grid.map((row, rowIdx) => (
+                            <div key={rowIdx} className={'seat-picker__row'}>
+                                <span className={'seat-picker__row-label'}>R{rowIdx + 1}</span>
+                                {row.map((seat, seatIdx) => {
+                                    if (!seat) return <div key={seatIdx} className={'seat-picker__seat seat-picker__seat--empty'} />;
+                                    const isSelected = !!selectedSeats.find(s => s.id === seat.id);
+                                    const isTaken = seat.is_taken;
+                                    return (
+                                        <div
+                                            key={seatIdx}
+                                            onClick={() => handleSeatClick(seat)}
+                                            title={`Ряд ${seat.row}, Місце ${seat.number} — ${seat.seat_type} — ${getPriceLabel(seat)}`}
+                                            className={`seat-picker__seat ${isTaken ? 'is-taken' : ''} ${isSelected ? 'is-selected' : ''}`}
+                                            style={{
+                                                background: isTaken ? '#9ca3af' : isSelected ? '#ff6b6b' : SEAT_COLORS[seat.seat_type],
+                                            }}
+                                        >
+                                            {seat.number}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ))}
                     </div>
-                ))}
+                </div>
             </div>
 
             {/* Вибрані місця */}
             {selectedSeats.length > 0 && (
-                <div style={{ marginTop: 10 }}>
-                    <h4>Обрані місця:</h4>
+                <div className={'seat-picker__summary'}>
+                    <h4 className={'seat-picker__summary-title'}>Обрані місця:</h4>
                     {selectedSeats.map(seat => (
-                        <p key={seat.id}>
+                        <p className={'seat-picker__summary-item'} key={seat.id}>
                             Ряд {seat.row}, Місце {seat.number} — {seat.seat_type} — {getPriceLabel(seat)}
                         </p>
                     ))}
-                    <p><strong>Загальна сума: {totalPrice} грн</strong></p>
-                    {!user && <p style={{ color: 'red' }}>Для купівлі квитків потрібно увійти в акаунт</p>}
-                    {user && <button onClick={handleBuy}>Купити {selectedSeats.length} квиток(и)</button>}
+                    <p className={'seat-picker__summary-total'}>Загальна сума: {totalPrice} грн</p>
+                    {!user && <p className={'seat-picker__error'}>Для купівлі квитків потрібно увійти в акаунт</p>}
+                    {user && (
+                        <button className={'seat-picker__buy-btn'} onClick={handleBuy}>
+                            Купити {selectedSeats.length} квиток(и)
+                        </button>
+                    )}
                 </div>
             )}
 
-            {success && <p style={{ color: 'green' }}>✅ Квитки успішно придбано!</p>}
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {success && <p className={'seat-picker__success'}>✅ Квитки успішно придбано!</p>}
+            {error && <p className={'seat-picker__error'}>{error}</p>}
         </div>
     );
 };

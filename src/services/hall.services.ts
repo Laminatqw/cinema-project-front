@@ -32,9 +32,12 @@ export const hallServices = {
         let response = await axiosInstance.get<IHall>(urls.halls.byId(id));
         return response.data;
     },
-    getAllSeats: async (hallId:number): Promise<IHallSeat[]> => {
-        let response = await axiosInstance.get<{data:IHallSeat[]}>(urls.halls.seats(hallId));
-        return response.data.data;
+    getAllSeats: async (hallId: number): Promise<IHallSeat[]> => {
+        let response = await axiosInstance.get(urls.halls.seats(hallId), {
+            params: { size: 1000 }
+        });
+        // перевіряємо формат відповіді
+        return Array.isArray(response.data) ? response.data : response.data.data;
     },
     getSeatById: async (id: number): Promise<IHallSeat> => {
         let response = await axiosInstance.get<IHallSeat>(urls.halls.byId(id));
@@ -46,6 +49,10 @@ export const hallServices = {
     },
     deleteSeat: async (seatId: number): Promise<IHallSeat> => {
         let response = await axiosInstance.delete<IHallSeat>(urls.halls.seatById(seatId));
+        return response.data;
+    },
+    deleteAllSeats: async (hallId: number): Promise<{deleted: number}> => {
+        let response = await axiosInstance.delete(urls.halls.seatsDeleteAll(hallId));
         return response.data;
     },
     updateSeats: async (hallId: number, payload: Partial<IHallSeat>[]): Promise<{updated: number}> => {
