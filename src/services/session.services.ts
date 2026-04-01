@@ -48,6 +48,10 @@ import {PaginatedModel} from "../models/PaginatedModel";
             });
             return response.data;
         },
+        getAllByDate: async (filters: { date?: string, hall_type?: string, movie?: number[], page?: number, size?: number }): Promise<PaginatedModel<ISession>> => {
+            let response = await axiosInstance.get(urls.sessions.base, { params: filters });
+            return response.data;
+        },
 
         //prices
 

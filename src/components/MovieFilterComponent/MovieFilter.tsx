@@ -1,6 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { movieActions } from "../../redux/slices/movieSlice";
+import './style.css';
 
 const MovieFilters: FC = () => {
     const dispatch = useAppDispatch();
@@ -60,25 +61,25 @@ const MovieFilters: FC = () => {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <h3>Фільтри</h3>
+        <div className={'movie-filter'}>
+            <h3 className={'movie-filter__title'}>Фільтри</h3>
 
-            <div>
-                <label>Назва</label>
+            <div className={'movie-filter__group'}>
+                <label className={'movie-filter__label'}>Назва</label>
                 <input
+                    className={'movie-filter__input'}
                     placeholder="Пошук за назвою..."
                     value={name}
                     onChange={e => setName(e.target.value)}
-                    style={{ width: '100%' }}
                 />
             </div>
 
-            <div>
-                <label>У прокаті</label>
+            <div className={'movie-filter__group'}>
+                <label className={'movie-filter__label'}>У прокаті</label>
                 <select
+                    className={'movie-filter__input'}
                     value={isNowShowing}
                     onChange={e => setIsNowShowing(e.target.value as 'yes' | 'no' | '')}
-                    style={{ width: '100%' }}
                 >
                     <option value="">Всі</option>
                     <option value="yes">Зараз у прокаті</option>
@@ -86,75 +87,75 @@ const MovieFilters: FC = () => {
                 </select>
             </div>
 
-            <div>
-                <label>Рейтинг</label>
-                <div style={{ display: 'flex', gap: 5 }}>
+            <div className={'movie-filter__group'}>
+                <label className={'movie-filter__label'}>Рейтинг</label>
+                <div className={'movie-filter__range'}>
                     <input
+                        className={'movie-filter__input'}
                         type="number" min="0" max="10" step="0.1"
                         placeholder="від" value={ratingGte}
                         onChange={e => setRatingGte(e.target.value)}
-                        style={{ width: '50%' }}
                     />
                     <input
+                        className={'movie-filter__input'}
                         type="number" min="0" max="10" step="0.1"
                         placeholder="до" value={ratingLte}
                         onChange={e => setRatingLte(e.target.value)}
-                        style={{ width: '50%' }}
                     />
                 </div>
             </div>
 
-            <div>
-                <label>Тривалість (хв)</label>
-                <div style={{ display: 'flex', gap: 5 }}>
+            <div className={'movie-filter__group'}>
+                <label className={'movie-filter__label'}>Тривалість (хв)</label>
+                <div className={'movie-filter__range'}>
                     <input
+                        className={'movie-filter__input'}
                         type="number" min="0"
                         placeholder="від" value={lengthGte}
                         onChange={e => setLengthGte(e.target.value)}
-                        style={{ width: '50%' }}
                     />
                     <input
+                        className={'movie-filter__input'}
                         type="number" min="0"
                         placeholder="до" value={lengthLte}
                         onChange={e => setLengthLte(e.target.value)}
-                        style={{ width: '50%' }}
                     />
                 </div>
             </div>
 
-            <div>
-                <label>Рік (точно)</label>
+            <div className={'movie-filter__group'}>
+                <label className={'movie-filter__label'}>Рік (точно)</label>
                 <input
+                    className={'movie-filter__input'}
                     type="number" placeholder="наприклад 2023"
                     value={yearExact}
                     onChange={e => setYearExact(e.target.value)}
-                    style={{ width: '100%' }}
                 />
             </div>
 
-            <div>
-                <label>Рік (діапазон)</label>
-                <div style={{ display: 'flex', gap: 5 }}>
+            <div className={'movie-filter__group'}>
+                <label className={'movie-filter__label'}>Рік (діапазон)</label>
+                <div className={'movie-filter__range'}>
                     <input
+                        className={'movie-filter__input'}
                         type="number" placeholder="від"
                         value={yearGte}
                         onChange={e => setYearGte(e.target.value)}
-                        style={{ width: '50%' }}
                     />
                     <input
+                        className={'movie-filter__input'}
                         type="number" placeholder="до"
                         value={yearLte}
                         onChange={e => setYearLte(e.target.value)}
-                        style={{ width: '50%' }}
                     />
                 </div>
             </div>
 
-            <div>
-                <label>Жанри</label>
-                <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 150, overflowY: 'auto' }}>
+            <div className={'movie-filter__group'}>
+                <label className={'movie-filter__label'}>Жанри</label>
+                <div className={'movie-filter__genres'}>
                     {genres.map(genre => (
-                        <label key={genre.id} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <label key={genre.id} className={'movie-filter__genre-item'}>
                             <input
                                 type="checkbox"
                                 checked={selectedGenres.includes(genre.id)}
@@ -166,8 +167,14 @@ const MovieFilters: FC = () => {
                 </div>
             </div>
 
-            <button onClick={handleApply}>Застосувати</button>
-            <button onClick={handleReset}>Скинути</button>
+            <div className={'movie-filter__actions'}>
+                <button className={'movie-filter__btn movie-filter__btn--primary'} onClick={handleApply}>
+                    Застосувати
+                </button>
+                <button className={'movie-filter__btn movie-filter__btn--secondary'} onClick={handleReset}>
+                    Скинути
+                </button>
+            </div>
         </div>
     );
 };

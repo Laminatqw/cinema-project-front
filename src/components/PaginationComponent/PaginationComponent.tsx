@@ -1,4 +1,7 @@
+import { useEffect } from 'react';
 import './styles.css'
+import {sessionActions} from "../../redux/slices/sessionSlice";
+import {useAppDispatch} from "../../redux/store";
 
 interface IProps {
     currentPage: number
@@ -6,55 +9,64 @@ interface IProps {
     onPageChange: (page: number) => void
     pageSize: number
     onPageSizeChange: (size: number) => void
+    storageKey?: string // унікальний ключ для збереження
 }
 
-
 const PaginationComponent = ({
-                                 currentPage,
-                                 totalPages,
-                                 onPageChange,
-                                 pageSize,
-                                 onPageSizeChange
+                                 currentPage, totalPages, onPageChange,
+                                 pageSize, onPageSizeChange, storageKey
                              }: IProps) => {
 
+
+
+    // відновлюємо з localStorage при монтуванні
+    useEffect(() => {
+        if (!storageKey) return;
+        const saved = localStorage.getItem(storageKey);
+        if (saved) {
+            const { page, size } = JSON.parse(saved);
+            if (size && size !== pageSize) onPageSizeChange(size);
+            if (page && page !== currentPage) onPageChange(page);
+        }
+    }, []);
+
+    // зберігаємо при зміні
+    useEffect(() => {
+        if (!storageKey) return;
+        localStorage.setItem(storageKey, JSON.stringify({ page: currentPage, size: pageSize }));
+    }, [currentPage, pageSize]);
 
     const range = 1;
 
     const getPages = () => {
         const pages: (number | string)[] = [];
-
         const start = Math.max(2, currentPage - range);
         const end = Math.min(totalPages - 1, currentPage + range);
-
         pages.push(1);
-
         if (start > 2) pages.push('...');
-
-        for (let i = start; i <= end; i++) {
-            pages.push(i);
-        }
-
+        for (let i = start; i <= end; i++) pages.push(i);
         if (end < totalPages - 1) pages.push('...');
-
         if (totalPages > 1) pages.push(totalPages);
-
         return pages;
     };
 
     const pages = getPages();
 
+    const handleSizeChange = (size: number) => {
+        onPageSizeChange(size);
+        onPageChange(1);
+        window.location.reload();
+    };
+
+
+
     return (
         <div className="pagination-wrapper">
-
-            {/* 🔹 Page size selector */}
             <div className="page-size">
                 <span>Show:</span>
                 <select
                     value={pageSize}
-                    onChange={(e) => {
-                        onPageSizeChange(Number(e.target.value));
-                        onPageChange(1); // reset page
-                    }}
+                    onChange={(e) => handleSizeChange(Number(e.target.value))}
                 >
                     <option value={10}>10</option>
                     <option value={20}>20</option>
@@ -62,15 +74,8 @@ const PaginationComponent = ({
                 </select>
             </div>
 
-            {/* 🔹 Pagination */}
             <div className="pagination">
-                <button
-                    disabled={currentPage === 1}
-                    onClick={() => onPageChange(currentPage - 1)}
-                >
-                    ←
-                </button>
-
+                <button disabled={currentPage === 1} onClick={() => onPageChange(currentPage - 1)}>←</button>
                 {pages.map((page, index) =>
                     page === '...' ? (
                         <span key={`dots-${index}`} className="dots">...</span>
@@ -84,15 +89,8 @@ const PaginationComponent = ({
                         </button>
                     )
                 )}
-
-                <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => onPageChange(currentPage + 1)}
-                >
-                    →
-                </button>
+                <button disabled={currentPage === totalPages} onClick={() => onPageChange(currentPage + 1)}>→</button>
             </div>
-
         </div>
     );
 };

@@ -1,10 +1,10 @@
 import {Link} from "react-router-dom";
-import './Header.css'
+import './styles.css'
 import MovieSearch from "../MovieSearchBar/MovieSearch";
 import {useAppDispatch, useAppSelector} from "../../redux/store";
 import {useEffect, useState} from "react";
 import {userActions} from "../../redux/slices/userSlice";
-import UserHeaderComponent from "./UserHeaderComponent";
+import UserHeaderComponent from "./UserHeaderComponent/UserHeaderComponent";
 const HeaderComponent = () => {
 
     const user = useAppSelector(state=> state.userStore.user);
@@ -27,14 +27,17 @@ const HeaderComponent = () => {
 
     return (
         <div className={'header'}>
-            <div><Link to={'/movies'}>to movies</Link></div>
-            <br/>
-            <div><Link to={'/'}>to homepage</Link></div>
-            <br/>
-            <div><Link to={'/filter'}>to filter</Link></div>
-            <UserHeaderComponent/>
-            <div>{user?.is_staff && <Link to={'/admin'}>Адмін панель</Link>}</div>
-            <MovieSearch/>
+            <div className={'header__nav'}>
+                <Link className={'header__link'} to={'/movies'}>to movies</Link>
+                <Link className={'header__link'} to={'/'}>to homepage</Link>
+                <Link className={'header__link'} to={'/filter'}>to filter</Link>
+                {user?.is_staff && <Link className={'header__link header__link--admin'} to={'/admin'}>Адмін панель</Link>}
+            </div>
+
+            <div className={'header__actions'}>
+                <MovieSearch/>
+                <UserHeaderComponent/>
+            </div>
         </div>
 
     );

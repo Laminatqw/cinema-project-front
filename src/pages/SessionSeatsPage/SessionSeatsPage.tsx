@@ -15,14 +15,16 @@ const SessionSeatsPage = () => {
         }
     }, [dispatch, sessionId]);
 
+
+
+    if (!session) return <p>Завантаження сеансу...</p>;
+
     if (error) return (
         <div>
             <h2>Помилка</h2>
             <p>Сесії не знайдено, або у вас немає доступу до неї</p>
         </div>
     );
-
-    if (!session) return <p>Завантаження сеансу...</p>;
 
     return (
         <div>

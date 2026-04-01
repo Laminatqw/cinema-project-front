@@ -51,6 +51,14 @@ type SessionQuery = {
     size: number;
 };
 
+type SessionDateQuery = {
+    date?: string
+    hall_type?: string
+    movie?: number[]
+    page?: number
+    size?: number
+}
+
 
 let getAllSessions = createAsyncThunk<PaginatedModel<ISession>, PageSizeModel|undefined>(
     'sessionSlice/getAllSessions', async (filters, thunkAPI) =>{
@@ -137,6 +145,18 @@ let getSessionsByMovie = createAsyncThunk<PaginatedModel<ISession>, SessionQuery
         }
     }
 );
+
+let getSessionsByDate = createAsyncThunk<PaginatedModel<ISession>, SessionDateQuery>(
+    'sessionSlice/getSessionsByDate', async (filters, thunkAPI) => {
+        try {
+            const sessions = await sessionServices.getAllByDate(filters);
+            return thunkAPI.fulfillWithValue(sessions);
+        } catch (e) {
+            const error = e as AxiosError<{ detail: string }>;
+            return thunkAPI.rejectWithValue(error?.response?.data.detail || 'Failed to fetch sessions');
+        }
+    }
+)
 
 //price
 
@@ -234,6 +254,12 @@ export const sessionSlice = createSlice({
                 state.total_items = action.payload.total_items
                 state.isLoaded = true
             })
+            .addCase(getSessionsByDate.fulfilled, (state, action) => {
+                state.sessions = action.payload?.data || [];
+                state.total_pages = action.payload.total_pages;
+                state.total_items = action.payload.total_items;
+                state.isLoaded = true;
+            })
             .addCase(getPrices.fulfilled, (state, action) => {
                 state.prices = action.payload;
             })
@@ -253,7 +279,8 @@ export const sessionSlice = createSlice({
 
         builder
             .addMatcher(
-                isPending(getAllSessions, getSessionById, createSession, updateSession, deleteSession, getSessionSeats, getSessionsByMovie,
+                isPending(getAllSessions, getSessionById, createSession, updateSession, deleteSession, getSessionSeats,
+                    getSessionsByMovie,getSessionsByDate,
                     getPrices, createPrice, updatePrice, deletePrice),
                 (state) => {
                     state.isLoaded = true;
@@ -261,14 +288,16 @@ export const sessionSlice = createSlice({
                 }
             )
             .addMatcher(
-                isFulfilled(getAllSessions, getSessionById, createSession, updateSession, deleteSession, getSessionSeats,getSessionsByMovie,
+                isFulfilled(getAllSessions, getSessionById, createSession, updateSession, deleteSession, getSessionSeats,
+                    getSessionsByMovie, getSessionsByDate,
                     getPrices, createPrice, updatePrice, deletePrice),
                 (state) => {
                     state.isLoaded = false;
                 }
             )
             .addMatcher(
-                isRejected(getAllSessions, getSessionById, createSession, updateSession, deleteSession, getSessionSeats,getSessionsByMovie,
+                isRejected(getAllSessions, getSessionById, createSession, updateSession, deleteSession, getSessionSeats,
+                    getSessionsByMovie, getSessionsByDate,
                     getPrices, createPrice, updatePrice, deletePrice),
                 (state, action) => {
                     state.isLoaded = false;
@@ -280,7 +309,8 @@ export const sessionSlice = createSlice({
 
 export const sessionActions = {
     ...sessionSlice.actions,
-    getAllSessions, getSessionById, createSession, updateSession, deleteSession, getSessionSeats, getSessionsByMovie,
+    getAllSessions, getSessionById, createSession, updateSession, deleteSession, getSessionSeats,
+    getSessionsByMovie, getSessionsByDate,
     getPrices, createPrice, updatePrice, deletePrice
 }
 

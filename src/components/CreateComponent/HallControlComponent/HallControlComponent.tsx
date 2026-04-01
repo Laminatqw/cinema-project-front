@@ -358,7 +358,9 @@ const HallControlComponent = () => {
                                  totalPages={total_pages || 1}
                                  onPageChange={handlePageChange}
                                  pageSize={filters.size ||10}
-                                 onPageSizeChange={handlePageSizeChange}/>
+                                 onPageSizeChange={handlePageSizeChange}
+                                 storageKey="halls-pagination"
+            />
         </div>
     );
 };

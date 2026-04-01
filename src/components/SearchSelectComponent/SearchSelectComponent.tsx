@@ -1,20 +1,37 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 
 interface SearchSelectProps<T> {
-    items: T[];
+    items?: T[];
+    fetchItems?: (query: string) => Promise<T[]>
     value: number | undefined;
     getLabel: (item: T) => string;
     getId: (item: T) => number;
     placeholder: string;
     onSelect: (id: number) => void;
+
 }
 
-const SearchSelect = <T,>({ items, value, getLabel, getId, placeholder, onSelect }: SearchSelectProps<T>) => {
+const SearchSelect = <T,>({ items, fetchItems, value, getLabel, getId, placeholder, onSelect }: SearchSelectProps<T>) => {
     const [search, setSearch] = useState('');
     const [open, setOpen] = useState(false);
+    const [asyncItems, setAsyncItems] = useState<T[]>([]);
 
-    const selected = items.find(i => getId(i) === value);
-    const filtered = items.filter(i => getLabel(i).toLowerCase().includes(search.toLowerCase()));
+    useEffect(() => {
+        if (!fetchItems) return;
+        const timeout = setTimeout(async () => {
+            if (search.length < 1) return;
+            const results = await fetchItems(search);
+            setAsyncItems(results);
+        }, 300);
+        return () => clearTimeout(timeout);
+    }, [search]);
+
+    const displayItems = fetchItems ? asyncItems : (items || []).filter(i =>
+        getLabel(i).toLowerCase().includes(search.toLowerCase())
+    );
+
+    const selected = (items || asyncItems).find(i => getId(i) === value);
+    const filtered = (items||asyncItems).filter(i => getLabel(i).toLowerCase().includes(search.toLowerCase()));
 
     return (
         <div style={{ position: 'relative' }}>

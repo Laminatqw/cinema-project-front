@@ -8,6 +8,10 @@ import { ISession_price } from "../../../models/ISession_price";
 import { SeatType } from "../../../models/IHallSeat";
 import SearchSelect from "../../SearchSelectComponent/SearchSelectComponent";
 import PaginationComponent from "../../PaginationComponent/PaginationComponent";
+import {movieServices} from "../../../services/movie.services";
+import {hallServices} from "../../../services/hall.services";
+import {IHall} from "../../../models/IHall";
+import {IMovie} from "../../../models/IMovie";
 
 const SEAT_TYPES: SeatType[] = ['regular', 'vip', 'disabled'];
 
@@ -170,8 +174,11 @@ const SessionControlComponent = () => {
                 <h3>{mode === 'create' ? 'Додати сесію' : `Редагувати сесію #${selectedSession?.id}`}</h3>
                 <div>
                     <label>Фільм</label>
-                    <SearchSelect
-                        items={movies}
+                    <SearchSelect<IMovie>
+                        fetchItems={async (query) => {
+                            const res = await movieServices.getAll({ name: query, size: 20 });
+                            return res.data;
+                        }}
                         value={formData.movie}
                         getLabel={m => m.name}
                         getId={m => m.id}
@@ -181,8 +188,11 @@ const SessionControlComponent = () => {
                 </div>
                 <div>
                     <label>Зал</label>
-                    <SearchSelect
-                        items={halls}
+                    <SearchSelect<IHall>
+                        fetchItems={async (query) => {
+                            const res = await hallServices.getAll({ size: 20 });
+                            return res.data.filter((h: IHall) => h.title.toLowerCase().includes(query.toLowerCase()));
+                        }}
                         value={formData.hall}
                         getLabel={h => h.title}
                         getId={h => h.id}
@@ -295,7 +305,10 @@ const SessionControlComponent = () => {
                                  totalPages={total_pages || 1}
                                  onPageChange={handlePageChange}
                                  pageSize={filters.size ||10}
-                                 onPageSizeChange={handlePageSizeChange}/>
+                                 onPageSizeChange={handlePageSizeChange}
+                                 storageKey="sessions-pagination"
+            />
+
         </div>
     );
 };

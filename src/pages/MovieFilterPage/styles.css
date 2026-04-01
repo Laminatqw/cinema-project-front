@@ -1,8 +1,237 @@
-.all{
-    display: flex;
-    flex-direction: row;
+.movie-filt-page {
+    min-height: calc(100vh - 70px);
+    background: radial-gradient(circle at top right, #1f2937 0%, #0b1220 55%, #060b16 100%);
+    padding: 20px 16px 32px;
 }
-.filmPag{
-    flex-direction: column;
-    margin-left: 100px;
+
+.movie-filt-page__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.movie-filt-page__dates {
+    display: flex;
+    gap: 8px;
+    padding: 10px 0;
+    overflow-x: auto;
+}
+
+.movie-filt-page__date-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    background: #111827;
+    color: #cbd5e1;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.movie-filt-page__date-btn:hover {
+    background: #1f2937;
+    color: #f9fafb;
+}
+
+.movie-filt-page__date-btn.is-active {
+    background: #dc2626;
+    border-color: #dc2626;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.movie-filt-page__filters {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0 12px;
+    border-bottom: 1px solid #1f2937;
+}
+
+.movie-filt-page__filter-wrap {
+    position: relative;
+}
+
+.movie-filt-page__filter-btn,
+.movie-filt-page__reset-btn {
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    background: #111827;
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.movie-filt-page__filter-btn:hover,
+.movie-filt-page__reset-btn:hover {
+    background: #1f2937;
+    color: #f9fafb;
+}
+
+.movie-filt-page__reset-btn {
+    color: #fecaca;
+    border-color: #7f1d1d;
+    background: #3f1d1d;
+}
+
+.movie-filt-page__reset-btn:hover {
+    background: #5b2525;
+}
+
+.movie-filt-page__dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 150px;
+    background: #111827;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 6px;
+    z-index: 30;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+}
+
+.movie-filt-page__dropdown--scroll {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.movie-filt-page__dropdown-item {
+    padding: 7px 9px;
+    border-radius: 6px;
+    color: #cbd5e1;
+    cursor: pointer;
+}
+
+.movie-filt-page__dropdown-item:hover {
+    background: #1f2937;
+    color: #f8fafc;
+}
+
+.movie-filt-page__dropdown-item.is-selected {
+    background: #1e3a8a;
+    color: #dbeafe;
+    font-weight: 700;
+}
+
+.movie-filt-page__genre-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 2px;
+    color: #e2e8f0;
+    cursor: pointer;
+}
+
+.movie-filt-page__movies {
+    margin-top: 16px;
+}
+
+.movie-filt-page__empty {
+    color: #cbd5e1;
+}
+
+.movie-filt-page__movie-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 24px;
+    border: 1px solid #1f2937;
+    border-radius: 12px;
+    background: #0f172a;
+    padding: 14px;
+}
+
+.movie-filt-page__poster-link {
+    display: block;
+    text-decoration: none;
+}
+
+.movie-filt-page__poster {
+    width: 100px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    background: #0b1220;
+}
+
+.movie-filt-page__poster--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e5e7eb;
+    font-size: 22px;
+}
+
+.movie-filt-page__movie-info {
+    flex: 1;
+}
+
+.movie-filt-page__movie-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.movie-filt-page__movie-title {
+    margin: 0 0 8px;
+    color: #f8fafc;
+}
+
+.movie-filt-page__movie-meta {
+    margin: 0 0 12px;
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.movie-filt-page__sessions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.movie-filt-page__session-link {
+    text-decoration: none;
+}
+
+.movie-filt-page__session-card {
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 8px 12px;
+    text-align: center;
+    min-width: 84px;
+    background: #111827;
+    transition: all 0.2s ease;
+}
+
+.movie-filt-page__session-card:hover {
+    border-color: #60a5fa;
+    background: #1e293b;
+}
+
+.movie-filt-page__session-time {
+    font-weight: 700;
+    font-size: 16px;
+    color: #f9fafb;
+}
+
+.movie-filt-page__session-type {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+@media (max-width: 768px) {
+    .movie-filt-page {
+        padding: 14px 10px 24px;
+    }
+
+    .movie-filt-page__movie-row {
+        gap: 12px;
+        padding: 10px;
+    }
+
+    .movie-filt-page__poster {
+        width: 84px;
+        height: 126px;
+    }
 }

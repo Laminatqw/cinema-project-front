@@ -2,6 +2,7 @@ import {FC, useState, useEffect, useRef} from 'react';
 import {Link} from "react-router-dom";
 import {movieServices} from "../../services/movie.services";
 import {IMovie} from "../../models/IMovie";
+import './styles.css';
 const MovieSearch: FC = () => {
         const [value, setValue] = useState('')
         const [results, setResults] = useState<IMovie[]>([])
@@ -37,8 +38,9 @@ const MovieSearch: FC = () => {
         }, [])
 
         return (
-            <div ref={ref} style={{ position: 'relative' }}>
+            <div ref={ref} className={'movie-search'}>
                 <input
+                    className={'movie-search__input'}
                     type="text"
                     placeholder="Пошук фільму..."
                     value={value}
@@ -47,30 +49,16 @@ const MovieSearch: FC = () => {
                 />
 
                 {isOpen && results.length > 0 && (
-                    <ul style={{
-                        position: 'absolute',
-                        top: '100%',
-                        left: 0,
-                        right: 0,
-                        background: 'white',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px',
-                        listStyle: 'none',
-                        padding: 0,
-                        margin: 0,
-                        zIndex: 1000,
-                        maxHeight: '300px',
-                        overflowY: 'auto'
-                    }}>
+                    <ul className={'movie-search__results'}>
                         {results.map(movie => (
-                            <li key={movie.id}>
+                            <li className={'movie-search__item'} key={movie.id}>
                                 <Link
+                                    className={'movie-search__link'}
                                     to={`/movies/${movie.id}`}
                                     onClick={() => {
                                         setIsOpen(false)
                                         setValue('')
                                     }}
-                                    style={{ display: 'block', padding: '8px 12px' }}
                                 >
                                     {movie.name}
                                 </Link>

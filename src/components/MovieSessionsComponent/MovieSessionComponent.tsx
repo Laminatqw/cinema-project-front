@@ -60,7 +60,9 @@ const MovieSessionsComponent = ({ movieId }: IProps) => {
                                  totalPages={total_pages || 1}
                                  onPageChange={handlePageChange}
                                  pageSize={filters.size ||10}
-                                 onPageSizeChange={handlePageSizeChange}/>
+                                 onPageSizeChange={handlePageSizeChange}
+                                 storageKey="movieSessions-pagination"
+            />
         </div>
     );
 };
