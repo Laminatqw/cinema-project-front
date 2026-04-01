@@ -1,0 +1,76 @@
+.tickets {
+    margin-top: 20px;
+    padding: 16px;
+    border: 1px solid #1f2937;
+    border-radius: 12px;
+    background: #0f172a;
+    color: #e5e7eb;
+}
+
+.tickets__title {
+    margin: 0 0 14px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.tickets__state {
+    margin: 0;
+    color: #94a3b8;
+}
+
+.tickets__table-wrap {
+    overflow-x: auto;
+    border: 1px solid #1f2937;
+    border-radius: 10px;
+}
+
+.tickets__table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+}
+
+.tickets__table th,
+.tickets__table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #1f2937;
+    text-align: left;
+}
+
+.tickets__table th {
+    background: #111827;
+    color: #cbd5e1;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.tickets__table tbody tr {
+    background: #0b1220;
+    transition: background 0.2s ease;
+}
+
+.tickets__table tbody tr:hover {
+    background: #162033;
+}
+
+.tickets__table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.tickets__details-link {
+    text-decoration: none;
+    color: #bfdbfe;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 6px 10px;
+    background: #1e293b;
+    transition: all 0.2s ease;
+}
+
+.tickets__details-link:hover {
+    color: #ffffff;
+    border-color: #60a5fa;
+    background: #25344b;
+}
