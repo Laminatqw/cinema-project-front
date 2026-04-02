@@ -289,6 +289,7 @@ const MovieControlComponent = () => {
                     onPageChange={handlePageChange}
                     pageSize={filters.size || 10}
                     onPageSizeChange={handlePageSizeChange}
+                    storageKey="movies-control-pagination"
                 />
             </div>
         </div>

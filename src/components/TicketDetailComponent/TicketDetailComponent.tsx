@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { ticketActions } from "../../redux/slices/tickerSlice";
 import { ticketServices } from "../../services/ticket.services";
-
+import './styles.css'
 const STATUS_LABELS: Record<string, string> = {
     reserved: '🟡 Заброньований',
     paid: '🟢 Оплачений',
@@ -12,9 +12,9 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const TicketDetailComponent = () => {
-    const { id } = useParams<{ id: string }>();
+    const {id} = useParams<{ id: string }>();
     const dispatch = useAppDispatch();
-    const { ticketDetail, error } = useAppSelector(state => state.ticketStore);
+    const {ticketDetail, error} = useAppSelector(state => state.ticketStore);
     const [qrUrl, setQrUrl] = useState<string | null>(null);
 
     useEffect(() => {
@@ -43,24 +43,61 @@ const TicketDetailComponent = () => {
 
     if (!ticketDetail) return <p>Завантаження...</p>;
     return (
-        <div>
+        <div className="ticket-detail">
+            <div className="ticket-detail__card">
 
-        <h2>Квиток #{ticketDetail.id}</h2>
-        <p>Фільм: {ticketDetail.movie}</p>
-        <p>Початок: {new Date(ticketDetail.start_time).toLocaleString('uk-UA')}</p>
-        <p>Зал: {ticketDetail.hall}</p>
-        <p>Ряд: {ticketDetail.row}, Місце: {ticketDetail.number}</p>
-        <p>Тип місця: {ticketDetail.seat_type}</p>
-        <p>Статус: {STATUS_LABELS[ticketDetail.status] ?? ticketDetail.status}</p>
+                {/* Header */}
+                <div className="ticket-detail__header">
+                    <h2 className="ticket-detail__number">Квиток №200{ticketDetail.id}</h2>
+                    <span className={`ticket-detail__status ticket-detail__status--${ticketDetail.status}`}>
+                    {STATUS_LABELS[ticketDetail.status] ?? ticketDetail.status}
+                </span>
+                </div>
 
-        {qrUrl && (
-            <div>
-                <h3>QR код</h3>
-                <img src={qrUrl} alt="QR код квитка" style={{ width: 200, height: 200 }} />
+                {/* Info */}
+                <div className="ticket-detail__body">
+                    <div className="ticket-detail__section">
+                        <div className="ticket-detail__row">
+                            <span className="ticket-detail__label">🎬 Фільм</span>
+                            <span className="ticket-detail__value">{ticketDetail.movie}</span>
+                        </div>
+                        <div className="ticket-detail__row">
+                            <span className="ticket-detail__label">🕐 Початок</span>
+                            <span className="ticket-detail__value">
+                            {new Date(ticketDetail.start_time).toLocaleString('uk-UA')}
+                        </span>
+                        </div>
+                        <div className="ticket-detail__row">
+                            <span className="ticket-detail__label">🏛️ Зал</span>
+                            <span className="ticket-detail__value">{ticketDetail.hall}</span>
+                        </div>
+                        <div className="ticket-detail__row">
+                            <span className="ticket-detail__label">💺 Місце</span>
+                            <span className="ticket-detail__value">
+                            Ряд {ticketDetail.row}, Місце {ticketDetail.number}
+                        </span>
+                        </div>
+                        <div className="ticket-detail__row">
+                            <span className="ticket-detail__label">🎫 Тип</span>
+                            <span className="ticket-detail__value">{ticketDetail.seat_type}</span>
+                        </div>
+                    </div>
+
+                    {/* QR */}
+                    {qrUrl && (
+                        <div className="ticket-detail__qr">
+                            <p className="ticket-detail__qr-label">QR код</p>
+                            <img
+                                className="ticket-detail__qr-img"
+                                src={qrUrl}
+                                alt="QR код квитка"
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
-        )}
-    </div>
+        </div>
     );
-};
+}
 
 export default TicketDetailComponent;

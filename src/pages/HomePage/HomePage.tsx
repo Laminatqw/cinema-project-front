@@ -44,77 +44,102 @@ const HomePage = () => {
 
     return (
         <div className="home">
-            {/* Hero */}
             <div
                 className="home__hero"
                 style={{
-                    backgroundImage: activeMovie?.picture ? `url(${activeMovie.picture})` : undefined,
+                    backgroundImage: activeMovie?.picture
+                        ? `url(${activeMovie.picture})`
+                        : undefined,
                 }}
             >
                 <div className="home__hero-overlay" />
-                <div className={'home-arrow-films'}>
-                {/* Стрілки */}
-                <button className="home__arrow home__arrow--left" onClick={prev}>‹</button>
-                {/*Афіші*/}
-                <div className="home__slider">
-                    {movies.map((movie, index) => (
+
+                {/* ===== КАРУСЕЛЬ (ЗВЕРХУ) ===== */}
+                <div className="home-arrow-films">
+                    <button className="home__arrow" onClick={prev}>‹</button>
+
+                    <div className="home__slider-wrapper">
                         <div
-                            key={movie.id}
-                            className={`home__slide ${index === activeIndex ? 'home__slide--active' : ''}`}
-                            onClick={() => setActiveIndex(index)}
+                            className="home__slider"
+                            style={{
+                                transform: `translateX(-${activeIndex * 115}px)`
+                            }}
                         >
-                            <div className="home__slide-poster-wrap">
-                                {movie.picture
-                                    ? <img className="home__slide-poster" src={movie.picture} alt={movie.name} />
-                                    : <div className="home__slide-placeholder">🎬</div>
-                                }
-                            </div>
-                            <p className="home__slide-title">{movie.name}</p>
+                            {movies.map((movie, index) => (
+                                <div
+                                    key={movie.id}
+                                    className={`home__slide ${
+                                        index === activeIndex ? 'home__slide--active' : ''
+                                    }`}
+                                    onClick={() => setActiveIndex(index)}
+                                >
+                                    <div className="home__slide-poster-wrap">
+                                        {movie.picture ? (
+                                            <img
+                                                className="home__slide-poster"
+                                                src={movie.picture}
+                                                alt={movie.name}
+                                            />
+                                        ) : (
+                                            <div className="home__slide-placeholder">🎬</div>
+                                        )}
+                                    </div>
+                                    <p className="home__slide-title">{movie.name}</p>
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    </div>
+
+                    <button className="home__arrow" onClick={next}>›</button>
                 </div>
-                <button className="home__arrow home__arrow--right" onClick={next}>›</button>
-                </div>
-                {/* Контент активного фільму */}
+
+                {/* ===== КОНТЕНТ ===== */}
                 {activeMovie && (
                     <div className="home__hero-content">
                         <h1 className="home__hero-title">{activeMovie.name}</h1>
+
                         <div className="home__hero-meta">
                             <span>{activeMovie.year}</span>
                             <span>{activeMovie.length} хв</span>
                             <span>⭐ {activeMovie.rating}</span>
-                            <span>{activeMovie.genres_detail.map(g => g.genre_name).join(', ')}</span>
+                            <span>
+                            {activeMovie.genres_detail
+                                .map((g) => g.genre_name)
+                                .join(', ')}
+                        </span>
                         </div>
 
-                        {/* Сесії на сьогодні */}
                         {movieSessions.length > 0 && (
                             <div className="home__sessions">
                                 <p className="home__sessions-label">Сьогодні:</p>
                                 <div className="home__sessions-list">
-                                    {movieSessions.map(session => (
+                                    {movieSessions.map((session) => (
                                         <Link
                                             key={session.id}
                                             to={`/movies/${activeMovie.id}`}
                                             className="home__session-btn"
                                         >
                                             {session.start_time
-                                                ? new Date(session.start_time).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' })
-                                                : '—'
-                                            }
+                                                ? new Date(session.start_time).toLocaleTimeString(
+                                                    'uk-UA',
+                                                    { hour: '2-digit', minute: '2-digit' }
+                                                )
+                                                : '—'}
                                         </Link>
                                     ))}
                                 </div>
                             </div>
                         )}
 
-                        <Link to={`/movies/${activeMovie.id}`} className="home__hero-btn">
+                        <Link
+                            to={`/movies/${activeMovie.id}`}
+                            className="home__hero-btn"
+                        >
                             Детальніше
                         </Link>
                     </div>
                 )}
             </div>
-
-
         </div>
     );
 };

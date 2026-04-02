@@ -7,7 +7,7 @@ import { ITicketDetail } from "../../models/ITicketDetail";
 
 
 type TickerSliceType = {
-    tickets : ITickets[],
+    tickets : ITicketDetail[],
     ticket : ITickets|null,
     ticketDetail : ITicketDetail|null,
     isLoaded: boolean,
@@ -22,7 +22,7 @@ const initialState: TickerSliceType = {
     error: ''
 }
 
-let getTicket = createAsyncThunk<ITickets[]>(
+let getTicket = createAsyncThunk<ITicketDetail[]>(
     'ticketSlice/getTicket', async (_, thunkAPI)=>{
         try {
             let ticket = await ticketServices.getTicket();

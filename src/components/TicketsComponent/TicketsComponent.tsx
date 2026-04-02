@@ -13,7 +13,7 @@ const STATUS_LABELS: Record<string, string> = {
 
 const TicketsComponent = () => {
     const dispatch = useAppDispatch();
-    const { tickets, isLoaded } = useAppSelector(state => state.ticketStore);
+    const { tickets, ticketDetail, isLoaded, error } = useAppSelector(state => state.ticketStore);
 
     useEffect(() => {
         dispatch(ticketActions.getTicket());
@@ -34,18 +34,18 @@ const TicketsComponent = () => {
                         <thead>
                         <tr>
                             <th>Номер</th>
-                            <th>Сесія</th>
+                            <th>Зал</th>
                             <th>Місце</th>
-                            <th>Статус</th>
-                            <th>Деталі</th>
+                            <th>Час</th>
                         </tr>
                         </thead>
                         <tbody>
                         {visibleTickets.map(ticket => (
                             <tr key={ticket.id}>
                                 <td>200{ticket.id}</td>
-                                <td>{ticket.session}</td>
-                                <td>{ticket.seat}</td>
+                                <td>{ticket.hall}</td>
+                                <td>Ряд {ticket.row}, Місце {ticket.number}</td>
+                                <td>{ticket.start_time ? new Date(ticket.start_time).toLocaleString('uk-UA') : '—'}</td>
                                 <td>{STATUS_LABELS[ticket.status] ?? ticket.status}</td>
                                 <td>
                                     <Link className={'tickets__details-link'} to={`/account/tickets/${ticket.id}`}>

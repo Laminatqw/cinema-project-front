@@ -6,8 +6,8 @@ import { ITicketDetail } from "../models/ITicketDetail";
 
 
 export const ticketServices = {
-    getTicket: async (): Promise<ITickets[]> => {
-        let response = await axiosInstance.get<{data: ITickets[]}>(urls.tickets.base);
+    getTicket: async (): Promise<ITicketDetail[]> => {
+        let response = await axiosInstance.get<{data: ITicketDetail[]}>(urls.tickets.base);
         return response.data.data;
     },
     createTicket: async (payload: Partial<ITickets> | Partial<ITickets>[]): Promise<ITickets | {created: number}> => {

@@ -1,0 +1,139 @@
+.ticket-detail {
+    padding: 32px 20px;
+    background: #0b1220;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.ticket-detail__card {
+    width: 100%;
+    max-width: 520px;
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.ticket-detail__header {
+    padding: 20px 24px;
+    background: #1f2937;
+    border-bottom: 1px solid #374151;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.ticket-detail__number {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #f9fafb;
+}
+
+.ticket-detail__status {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid transparent;
+}
+
+.ticket-detail__status--reserved {
+    background: #78350f;
+    color: #fde68a;
+    border-color: #92400e;
+}
+
+.ticket-detail__status--paid {
+    background: #14532d;
+    color: #bbf7d0;
+    border-color: #166534;
+}
+
+.ticket-detail__status--canceled {
+    background: #7f1d1d;
+    color: #fecaca;
+    border-color: #991b1b;
+}
+
+.ticket-detail__status--used {
+    background: #1f2937;
+    color: #9ca3af;
+    border-color: #374151;
+}
+
+.ticket-detail__body {
+    padding: 24px;
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.ticket-detail__section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.ticket-detail__row {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.ticket-detail__label {
+    font-size: 12px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ticket-detail__value {
+    font-size: 15px;
+    color: #f9fafb;
+    font-weight: 500;
+}
+
+.ticket-detail__qr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.ticket-detail__qr-label {
+    margin: 0;
+    font-size: 12px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ticket-detail__qr-img {
+    width: 160px;
+    height: 160px;
+    border-radius: 10px;
+    border: 1px solid #374151;
+    background: #fff;
+    padding: 6px;
+}
+
+@media (max-width: 560px) {
+    .ticket-detail__body {
+        flex-direction: column;
+    }
+
+    .ticket-detail__qr {
+        width: 100%;
+    }
+
+    .ticket-detail__qr-img {
+        width: 100%;
+        height: auto;
+    }
+}
