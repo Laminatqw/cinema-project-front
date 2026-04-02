@@ -181,31 +181,36 @@ const SessionControlComponent = () => {
                     <div className="session-form__group">
                         <label>Фільм</label>
                         <div className="session-form__select">
-                        <SearchSelect<IMovie> fetchItems={async (query) => {
-                            const res = await movieServices.getAll({ name: query, size: 20 });
-                            return res.data;
-                        }}
-                                              value={formData.movie}
-                                              getLabel={m => m.name}
-                                              getId={m => m.id}
-                                              placeholder="Пошук фільму..."
-                                              onSelect={id => setFormData(prev => (
-                                                  { ...prev, movie: id }
-                                              ))} />
+                            <SearchSelect<IMovie>
+                                fetchItems={async (query) => {
+                                    const res = await movieServices.getAll({ name: query, size: 20 });
+                                    return res.data;
+                                }}
+                                fetchById={async (id) => movieServices.getById(id)}
+                                value={formData.movie}
+                                getLabel={m => m.name}
+                                getId={m => m.id}
+                                placeholder="Пошук фільму..."
+                                onSelect={id => setFormData(prev => ({ ...prev, movie: id }))}
+                            />
                         </div>
                     </div>
 
                     <div className="session-form__group">
                         <label>Зал</label>
                         <div className="session-form__select">
-                            <SearchSelect<IHall> fetchItems={async (query) => {
-                                const res = await hallServices.getAll({ size: 20 });
-                                return res.data.filter((h: IHall) => h.title.toLowerCase().includes(query.toLowerCase())); }}
-                                                 value={formData.hall} getLabel={h => h.title}
-                                                 getId={h => h.id}
-                                                 placeholder="Пошук залу..."
-                                                 onSelect={id => setFormData(
-                                                     prev => ({ ...prev, hall: id }))} />
+                            <SearchSelect<IHall>
+                                fetchItems={async (query) => {
+                                    const res = await hallServices.getAll({ size: 20 });
+                                    return res.data.filter((h: IHall) => h.title.toLowerCase().includes(query.toLowerCase()));
+                                }}
+                                fetchById={async (id) => hallServices.getById(id)}
+                                value={formData.hall}
+                                getLabel={h => h.title}
+                                getId={h => h.id}
+                                placeholder="Пошук залу..."
+                                onSelect={id => setFormData(prev => ({ ...prev, hall: id }))}
+                            />
                         </div>
                     </div>
 

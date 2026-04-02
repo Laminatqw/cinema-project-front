@@ -11,7 +11,7 @@ export const urls = {
     auth:{
         base:'/auth',
         requestPasswordRecovery:()=> urls.auth.base + '/recovery',
-        changePassword:(token:string)=> urls.auth.requestPasswordRecovery + '/' + token,
+        changePassword: (token: string) => urls.auth.base + '/recovery/' + token,
         refreshToken:() => urls.auth.base + '/refresh',
         activateAccount:(token:string)=> urls.auth.base + '/activate/' + token
     },

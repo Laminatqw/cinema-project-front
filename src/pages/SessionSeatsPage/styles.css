@@ -1,0 +1,80 @@
+.session-seats-page {
+    min-height: calc(100vh - 70px);
+    background: radial-gradient(circle at top left, #1f2937 0%, #0b1220 55%, #060b16 100%);
+    padding: 20px 16px 32px;
+}
+
+.session-seats-page__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    border: 1px solid #1f2937;
+    border-radius: 14px;
+    background: rgba(15, 23, 42, 0.85);
+    padding: 18px;
+}
+
+.session-seats-page__state-wrap {
+    max-width: 900px;
+    margin: 20px auto;
+    border: 1px solid #7f1d1d;
+    border-radius: 12px;
+    background: rgba(127, 29, 29, 0.3);
+    padding: 18px;
+}
+
+.session-seats-page__state {
+    color: #cbd5e1;
+}
+
+.session-seats-page__back-link {
+    display: inline-block;
+    text-decoration: none;
+    color: #bfdbfe;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 7px 10px;
+    background: #111827;
+    transition: all 0.2s ease;
+    margin-bottom: 12px;
+}
+
+.session-seats-page__back-link:hover {
+    color: #ffffff;
+    border-color: #60a5fa;
+    background: #1e293b;
+}
+
+.session-seats-page__title {
+    margin: 0 0 8px;
+    color: #f8fafc;
+    font-size: 28px;
+}
+
+.session-seats-page__meta {
+    margin: 0 0 12px;
+    color: #94a3b8;
+}
+
+.session-seats-page__picker-wrap {
+    margin-top: 6px;
+}
+
+.session-seats-page__error {
+    margin: 0;
+    color: #fecaca;
+}
+
+@media (max-width: 768px) {
+    .session-seats-page {
+        padding: 14px 10px 24px;
+    }
+
+    .session-seats-page__inner,
+    .session-seats-page__state-wrap {
+        padding: 14px;
+    }
+
+    .session-seats-page__title {
+        font-size: 24px;
+    }
+}

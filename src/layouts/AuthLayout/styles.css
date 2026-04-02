@@ -1,0 +1,143 @@
+.auth-layout {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0b1220;
+    padding: 20px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 16px;
+    padding: 32px;
+}
+
+.auth-card__title {
+    text-align: center;
+    font-size: 24px;
+    color: #f8fafc;
+    margin: 0 0 24px;
+}
+
+/* Tabs */
+.auth-tabs {
+    display: flex;
+    gap: 4px;
+    background: #1f2937;
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 24px;
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #9ca3af;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.auth-tab:hover {
+    color: #f8fafc;
+}
+
+.auth-tab--active {
+    background: #e50914;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Form */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.auth-form__group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.auth-form__group label {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+.auth-form__input {
+    padding: 10px 14px;
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    color: #f8fafc;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.auth-form__input:focus {
+    border-color: #e50914;
+}
+
+.auth-form__btn {
+    padding: 11px;
+    background: #e50914;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 4px;
+}
+
+.auth-form__btn:hover {
+    background: #c0070f;
+}
+
+.auth-form__btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.auth-form__link {
+    background: none;
+    border: none;
+    color: #60a5fa;
+    cursor: pointer;
+    font-size: 13px;
+    text-align: center;
+    padding: 4px;
+}
+
+.auth-form__link:hover {
+    text-decoration: underline;
+}
+
+.auth-form__error {
+    color: #f87171;
+    font-size: 13px;
+    margin: 0;
+}
+
+.auth-form__success {
+    color: #86efac;
+    font-size: 14px;
+    text-align: center;
+}
+
+.auth-form__hint {
+    color: #9ca3af;
+    font-size: 13px;
+    margin: 0;
+}

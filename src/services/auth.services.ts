@@ -27,9 +27,10 @@ export const authServices = {
         await axiosInstance.post(urls.auth.requestPasswordRecovery(), { email });
 
     },
-    changePassword: async (token: string,payload: IPasswordChange): Promise<string> => {
+    recoveryChangePassword: async (token: string,payload: IPasswordChange): Promise<string> => {
 
         const response = await axiosInstance.post(urls.auth.changePassword(token), payload);
+        console.log(token)
         return response.data
     },
     activateAccount: async (token: string):Promise<string> =>{

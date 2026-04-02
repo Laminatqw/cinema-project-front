@@ -37,8 +37,7 @@ const UserHeaderComponent = () => {
                         )}
                     </div>
                     : <div className={'user-header__auth-links'}>
-                            <Link className={'user-header__auth-link'} to={'/register'}>to register</Link>
-                            <Link className={'user-header__auth-link'} to={'/login'}>to login</Link>
+                            <Link className={'user-header__auth-link'} to={'/auth'}>Sign up/in</Link>
                         </div>
             }
         </div>

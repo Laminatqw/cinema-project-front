@@ -18,6 +18,8 @@ import SessionSeatsPage from "../pages/SessionSeatsPage/SessionSeatsPage";
 import TicketDetailComponent from "../components/TicketDetailComponent/TicketDetailComponent";
 import AccountPage from "../pages/AccountPage/AccountPage";
 import ProtectedRouteComponent from "../components/ProtectedRouteComponent/ProtectedRouteComponent";
+import AuthLayout from "../layouts/AuthLayout/AuthLayout";
+import PasswordChangeComponent from "../components/PasswordChangeComponent/PasswordChangeComponent";
 
 export const router = createBrowserRouter([
     {
@@ -35,6 +37,8 @@ export const router = createBrowserRouter([
             {path:'activate/:token', element:<ActivationPage/>},
             {path:'account', element:<ProtectedRouteComponent requireAuth><AccountPage/></ProtectedRouteComponent>},
             {path:'account/tickets/:id', element:<TicketDetailComponent/>},
+            {path:'/auth', element:<AuthLayout/>},
+            { path: 'recovery/:token', element: <PasswordChangeComponent /> },
 
             {
                 path: 'admin',

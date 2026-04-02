@@ -1,73 +1,239 @@
-/* Загальний контейнер */
-.homepage {
-    padding: 25px;
-    background-color: #111827;
-    color: #f1f1f1;
+.home {
+    background: #0b1220;
     min-height: 100vh;
-    font-family: 'Segoe UI', sans-serif;
+    color: #e5e7eb;
 }
 
-.homepage h1 {
-    font-size: 28px;
-    margin-bottom: 20px;
-    color: #e50914;
-}
-
-/* Сітка фільмів */
-.movies {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-}
-
-/* Картка фільму */
-.movie2 {
-    background-color: #1f1f1f;
-    border-radius: 12px;
-    overflow: hidden;
+.home__loading,
+.home__empty {
+    color: #9ca3af;
     text-align: center;
-    padding: 15px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    padding: 60px 20px;
+    font-size: 16px;
+}
+
+/* ===== Hero ===== */
+.home__hero {
+    position: relative;
+    height: 520px;
+    background-size: cover;
+    background-position: center;
+    background-color: #111827;
+    transition: background-image 0.5s ease;
+    overflow: hidden;
+}
+
+.home__hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+            to right,
+            rgba(11, 18, 32, 0.95) 0%,
+            rgba(11, 18, 32, 0.6) 50%,
+            rgba(11, 18, 32, 0.2) 100%
+    );
+}
+
+.home__hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 60px 48px;
+    max-width: 560px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 14px;
+    height: 100%;
+    justify-content: center;
 }
 
-.movie2 img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.movie2:hover img {
-    transform: scale(1.05);
-}
-
-.movie2 h3 {
+.home__hero-title {
+    font-size: 38px;
+    font-weight: 800;
+    color: #f9fafb;
     margin: 0;
-    font-size: 18px;
-    color: #f1f1f1;
+    line-height: 1.2;
 }
 
-.movie2 a {
-    text-decoration: none;
-    background-color: #e50914;
-    color: #fff;
-    padding: 8px 12px;
+.home__hero-meta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 14px;
+    color: #9ca3af;
+}
+
+.home__sessions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.home__sessions-label {
+    margin: 0;
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+.home__sessions-list {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.home__session-btn {
+    padding: 6px 14px;
+    border: 1px solid #374151;
     border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.2s ease;
+    background: rgba(31, 41, 55, 0.8);
+    color: #f9fafb;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s;
 }
 
-.movie2 a:hover {
-    background-color: #b0060f;
+.home__session-btn:hover {
+    background: #e50914;
+    border-color: #e50914;
 }
 
-/* Текст при відсутності фільмів */
-.homepage p {
-    font-size: 16px;
-    color: #ccc;
+.home__hero-btn {
+    display: inline-block;
+    padding: 10px 24px;
+    background: #e50914;
+    color: #fff;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    width: fit-content;
+    transition: background 0.2s;
+}
+
+.home__hero-btn:hover {
+    background: #c0070f;
+}
+
+/* Arrows */
+.home__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #374151;
+    color: #fff;
+    font-size: 32px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    line-height: 1;
+}
+
+.home__arrow:hover {
+    background: #e50914;
+    border-color: #e50914;
+}
+
+.home__arrow--left { left: 16px; }
+.home__arrow--right { right: 16px; }
+
+/* ===== Slider ===== */
+.home__slider {
+    display: flex;
+    gap: 12px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #374151 transparent;
+}
+
+.home__slider::-webkit-scrollbar {
+    height: 4px;
+}
+
+.home__slider::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.home__slider::-webkit-scrollbar-thumb {
+    background: #374151;
+    border-radius: 2px;
+}
+
+.home__slide {
+    flex-shrink: 0;
+    width: 110px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.home__slide:hover {
+    opacity: 0.8;
+    transform: translateY(-2px);
+}
+
+.home__slide--active {
+    opacity: 1;
+    transform: translateY(-4px);
+}
+
+.home__slide-poster-wrap {
+    width: 110px;
+    height: 165px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #111827;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.home__slide--active .home__slide-poster-wrap {
+    border-color: #e50914;
+}
+
+.home__slide-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.home__slide-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #6b7280;
+}
+
+.home__slide-title {
+    margin: 6px 0 0;
+    font-size: 11px;
+    color: #9ca3af;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+    .home__hero {
+        height: 420px;
+    }
+
+    .home__hero-content {
+        padding: 30px 24px;
+    }
+
+    .home__hero-title {
+        font-size: 26px;
+    }
 }
