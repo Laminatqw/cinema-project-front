@@ -5,7 +5,8 @@ const AdminPage = () => {
         <div className="admin-page">
             <h2>Dashboard</h2>
 
-            TODO:Fix_SearchSelect_in_SessionControl
+            TODO:Fix_Pagination_in_MovieControl
+            TODO:Remake_HomePage_hide_lowbar_fix_positioning_and_location
         </div>
     );
 };

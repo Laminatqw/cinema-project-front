@@ -52,11 +52,29 @@ const HomePage = () => {
                 }}
             >
                 <div className="home__hero-overlay" />
-
+                <div className={'home-arrow-films'}>
                 {/* Стрілки */}
                 <button className="home__arrow home__arrow--left" onClick={prev}>‹</button>
+                {/*Афіші*/}
+                <div className="home__slider">
+                    {movies.map((movie, index) => (
+                        <div
+                            key={movie.id}
+                            className={`home__slide ${index === activeIndex ? 'home__slide--active' : ''}`}
+                            onClick={() => setActiveIndex(index)}
+                        >
+                            <div className="home__slide-poster-wrap">
+                                {movie.picture
+                                    ? <img className="home__slide-poster" src={movie.picture} alt={movie.name} />
+                                    : <div className="home__slide-placeholder">🎬</div>
+                                }
+                            </div>
+                            <p className="home__slide-title">{movie.name}</p>
+                        </div>
+                    ))}
+                </div>
                 <button className="home__arrow home__arrow--right" onClick={next}>›</button>
-
+                </div>
                 {/* Контент активного фільму */}
                 {activeMovie && (
                     <div className="home__hero-content">
@@ -96,24 +114,7 @@ const HomePage = () => {
                 )}
             </div>
 
-            {/* Афіші */}
-            <div className="home__slider">
-                {movies.map((movie, index) => (
-                    <div
-                        key={movie.id}
-                        className={`home__slide ${index === activeIndex ? 'home__slide--active' : ''}`}
-                        onClick={() => setActiveIndex(index)}
-                    >
-                        <div className="home__slide-poster-wrap">
-                            {movie.picture
-                                ? <img className="home__slide-poster" src={movie.picture} alt={movie.name} />
-                                : <div className="home__slide-placeholder">🎬</div>
-                            }
-                        </div>
-                        <p className="home__slide-title">{movie.name}</p>
-                    </div>
-                ))}
-            </div>
+
         </div>
     );
 };

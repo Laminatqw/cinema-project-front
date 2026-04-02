@@ -222,7 +222,7 @@ const MovieControlComponent = () => {
 
             {/* ===== SEARCH ===== */}
             <input
-                className="movie-search"
+                className="movie-search-table"
                 placeholder="Пошук фільму..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
