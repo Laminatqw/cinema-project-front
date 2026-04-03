@@ -9,7 +9,6 @@ const MovieSearch: FC = () => {
         const [isOpen, setIsOpen] = useState(false)
         const ref = useRef<HTMLDivElement>(null)
 
-        // debounce пошук
         useEffect(() => {
             if (!value.trim()) {
                 setResults([])
@@ -26,7 +25,6 @@ const MovieSearch: FC = () => {
             return () => clearTimeout(timeout)
         }, [value])
 
-        // закрити при кліку поза компонентом
         useEffect(() => {
             const handleClickOutside = (e: MouseEvent) => {
                 if (ref.current && !ref.current.contains(e.target as Node)) {

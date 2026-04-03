@@ -6,7 +6,7 @@ import {authServices} from "../../services/auth.services";
 import {AxiosError} from "axios";
 
 interface AuthState {
-    token: TokenRefresh | null; // access + refresh
+    token: TokenRefresh | null;
     isAuthenticated: boolean;
     isLoading: boolean;
     error: string | null;

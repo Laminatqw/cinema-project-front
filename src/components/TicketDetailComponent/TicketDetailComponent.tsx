@@ -29,7 +29,6 @@ const TicketDetailComponent = () => {
                 setQrUrl(URL.createObjectURL(blob));
             });
         }
-        // очищаємо URL при unmount
         return () => {
             if (qrUrl) URL.revokeObjectURL(qrUrl);
         };

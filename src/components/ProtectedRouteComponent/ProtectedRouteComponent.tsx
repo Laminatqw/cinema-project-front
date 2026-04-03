@@ -13,7 +13,7 @@ const ProtectedRouteComponent = ({ children, requireAuth = false, requireStaff =
     const user = useAppSelector(state => state.userStore.user);
     const isInitialized = useAppSelector(state => state.userStore.isInitialized);
 
-    if (!isInitialized) return null; // чекаємо поки завантажиться юзер
+    if (!isInitialized) return null;
 
     if (requireAuth && !user) {
         return <Navigate to="/login" replace />;

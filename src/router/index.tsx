@@ -2,11 +2,8 @@ import {createBrowserRouter} from "react-router-dom";
 import MainLayout from "../layouts/MainLayout/MainLayout";
 import HomePage from "../pages/HomePage/HomePage";
 import MoviesFiltPage from "../pages/MovieFilterPage/MoviesFiltPage";
-import RegisterPage from "../pages/RegisterPage/RegisterPage";
 import ActivationPage from "../pages/ActivationPage/ActivationPage";
-import LoginPage from "../pages/LoginPage/LoginPage";
 import AdminPage from "../pages/AdminPage/AdminPage";
-import UserAccountComponent from "../components/UserAccountComponent/UserAccountComponent";
 import MovieDetailPage from "../pages/MovieDetailPage/MovieDetailPage";
 import MoviesPage from "../pages/MoviePage/MoviesPage";
 import HallControlComponent from "../components/CreateComponent/HallControlComponent/HallControlComponent";
@@ -18,8 +15,9 @@ import SessionSeatsPage from "../pages/SessionSeatsPage/SessionSeatsPage";
 import TicketDetailComponent from "../components/TicketDetailComponent/TicketDetailComponent";
 import AccountPage from "../pages/AccountPage/AccountPage";
 import ProtectedRouteComponent from "../components/ProtectedRouteComponent/ProtectedRouteComponent";
-import AuthLayout from "../layouts/AuthLayout/AuthLayout";
+import AuthPage from "../pages/AuthPage/AuthPage";
 import PasswordChangeComponent from "../components/PasswordChangeComponent/PasswordChangeComponent";
+import PasswordRecoveryComponent from "../components/PasswordRecoveryComponent/PasswordRecoveryComponent";
 
 export const router = createBrowserRouter([
     {
@@ -32,19 +30,20 @@ export const router = createBrowserRouter([
             {path:'movies/:id', element:<MovieDetailPage/>},
             {path:'sessions/:sessionId/seats', element:<SessionSeatsPage/>},
             {path:'filter', element:<MoviesFiltPage/>},
-            {path:'register', element:<RegisterPage/>},
-            {path:'login', element:<LoginPage/>},
+            {path:'register', element:<AuthPage/>},
+            {path:'login', element:<AuthPage/>},
             {path:'activate/:token', element:<ActivationPage/>},
             {path:'account', element:<ProtectedRouteComponent requireAuth><AccountPage/></ProtectedRouteComponent>},
             {path:'account/tickets/:id', element:<TicketDetailComponent/>},
-            {path:'/auth', element:<AuthLayout/>},
+            {path:'/auth', element:<AuthPage/>},
+            { path: 'recovery', element: <PasswordRecoveryComponent /> },
             { path: 'recovery/:token', element: <PasswordChangeComponent /> },
 
             {
                 path: 'admin',
                 element:  <ProtectedRouteComponent requireAuth requireStaff><AdminLayout /></ProtectedRouteComponent>,
                 children: [
-                    {index: true, element: <AdminPage/>}, // головна адмін панелі
+                    {index: true, element: <AdminPage/>},
                     {path: 'movies', element: <MovieControlComponent/>},
                     {path: 'halls', element: <HallControlComponent/>},
                     {path: 'genres', element: <GenreControlComponent/>},

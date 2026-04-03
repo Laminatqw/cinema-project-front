@@ -1,4 +1,3 @@
-import axios from "axios";
 import {baseUrl, urls} from "../constants/urls";
 import {IHall} from "../models/IHall";
 import {IHallSeat} from "../models/IHallSeat";

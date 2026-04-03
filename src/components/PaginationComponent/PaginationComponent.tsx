@@ -9,7 +9,7 @@ interface IProps {
     onPageChange: (page: number) => void
     pageSize: number
     onPageSizeChange: (size: number) => void
-    storageKey?: string // унікальний ключ для збереження
+    storageKey?: string
 }
 
 const PaginationComponent = ({
@@ -19,7 +19,6 @@ const PaginationComponent = ({
 
 
 
-    // відновлюємо з localStorage при монтуванні
     useEffect(() => {
         if (!storageKey) return;
         const saved = localStorage.getItem(storageKey);
@@ -30,7 +29,6 @@ const PaginationComponent = ({
         }
     }, []);
 
-    // зберігаємо при зміні
     useEffect(() => {
         if (!storageKey) return;
         localStorage.setItem(storageKey, JSON.stringify({ page: currentPage, size: pageSize }));

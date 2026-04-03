@@ -4,7 +4,6 @@ const AdminPage = () => {
     return (
         <div className="admin-page">
             <h2>Dashboard</h2>
-            TODO:postman_links;api_doc_description;clear_front;
         </div>
     );
 };

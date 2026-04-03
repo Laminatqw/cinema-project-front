@@ -238,7 +238,6 @@ export const hallSlice = createSlice({
                 state.isLoaded = false;
             })
 
-        // ---- Matchers ----
         builder
             .addMatcher(
                 isPending(

@@ -1,4 +1,3 @@
-import axios from "axios";
 import {baseUrl, urls} from "../constants/urls";
 import {ITickets} from "../models/ITickets";
 import { axiosInstance } from "../helpers/axiosInstance";

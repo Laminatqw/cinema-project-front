@@ -11,7 +11,7 @@ import './styles.css';
 
 type AuthTab = 'login' | 'register' | 'recovery';
 
-const AuthLayout = () => {
+const AuthPage = () => {
     const [activeTab, setActiveTab] = useState<AuthTab>('login');
 
     return (
@@ -212,4 +212,4 @@ const RecoveryForm = ({ onBack }: { onBack: () => void }) => {
     );
 };
 
-export default AuthLayout;
+export default AuthPage;
