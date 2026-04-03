@@ -3,6 +3,7 @@
     color: #e5e7eb;
     background: #0b1220;
     border: 1px solid #1f2937;
+    height: 100vh;
 }
 
 .movie-detail__state {
